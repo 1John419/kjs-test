@@ -1,0 +1,65 @@
+*,
+::before,
+::after {
+  box-sizing: inherit;
+}
+
+body {
+  background-color: hsl(198, 71%, 92%);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body * {
+  max-height: 1000000px;
+}
+
+h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 1.0rem 0;
+}
+
+html {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  height: 100%;
+}
+
+p {
+  margin: 0 0 0.5rem;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-flow: row nowrap;
+  height: 100%;
+}
+
+.loading {
+  align-self: center;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.loading--hide {
+  display: none;
+}
+
+.spinner {
+  animation: spin 1.0s linear infinite;
+  fill: hsl(18, 50%, 50%);
+  margin-top: 1.0rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
