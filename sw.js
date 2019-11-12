@@ -1,8 +1,8 @@
-let appPrefix = 'kjs';
+let appPrefix = 'kjs-test';
 
 let appCaches = [
   {
-    name: 'kjs-root-20191110.03',
+    name: 'kjs-test-root-20191112.01',
     urls: [
       './',
       './index.html',
@@ -13,7 +13,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-css-20191110.03',
+    name: 'kjs-test-css-20191112.01',
     urls: [
       './css/load.css',
       './css/kjs.css',
@@ -21,7 +21,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-font-20191110.01',
+    name: 'kjs-test-font-20191112.01',
     urls: [
       './font/lato-v15-latin-regular.woff2',
       './font/merriweather-v20-latin-regular.woff2',
@@ -32,7 +32,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-help-20191110.01',
+    name: 'kjs-test-help-20191112.01',
     urls: [
       './help/about.html',
       './help/bookmark.html',
@@ -47,7 +47,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-js-20191110.03',
+    name: 'kjs-test-js-20191112.01',
     urls: [
       './js/app.js',
       './js/EventBus.js',
@@ -58,7 +58,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-js-controller-20191110.03',
+    name: 'kjs-test-js-controller-20191112.01',
     urls: [
       './js/controller/BookmarkController.js',
       './js/controller/HelpController.js',
@@ -70,7 +70,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-js-model-20191110.03',
+    name: 'kjs-test-js-model-20191112.01',
     urls: [
       './js/model/BookmarkModel.js',
       './js/model/HelpModel.js',
@@ -82,7 +82,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-js-tome-20191110.03',
+    name: 'kjs-test-js-tome-20191112.01',
     urls: [
       './js/tome/kjv.js',
       './js/tome/strong.js',
@@ -90,7 +90,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-js-view-20191110.03',
+    name: 'kjs-js-view-20191112.01',
     urls: [
       './js/view/BookmarkExportView.js',
       './js/view/BookmarkFolderAddView.js',
@@ -119,7 +119,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-png-20191110.01',
+    name: 'kjs-png-20191112.01',
     urls: [
       './favicon.png',
       './png/icon-032.png',
