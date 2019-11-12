@@ -2,7 +2,7 @@ let appPrefix = 'kjs-test';
 
 let appCaches = [
   {
-    name: 'kjs-test-root-20191112.01',
+    name: 'kjs-test-root-20191112.02',
     urls: [
       './',
       './index.html',
@@ -13,7 +13,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-css-20191112.01',
+    name: 'kjs-test-css-20191112.02',
     urls: [
       './css/load.css',
       './css/kjs.css',
@@ -21,7 +21,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-font-20191112.01',
+    name: 'kjs-test-font-20191112.02',
     urls: [
       './font/lato-v15-latin-regular.woff2',
       './font/merriweather-v20-latin-regular.woff2',
@@ -32,7 +32,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-help-20191112.01',
+    name: 'kjs-test-help-20191112.02',
     urls: [
       './help/about.html',
       './help/bookmark.html',
@@ -47,7 +47,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-js-20191112.01',
+    name: 'kjs-test-js-20191112.02',
     urls: [
       './js/app.js',
       './js/EventBus.js',
@@ -58,31 +58,31 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-js-controller-20191112.01',
+    name: 'kjs-test-js-controller-20191112.02',
     urls: [
-      './js/controller/BookmarkController.js',
-      './js/controller/HelpController.js',
-      './js/controller/NavigatorController.js',
-      './js/controller/ReadController.js',
-      './js/controller/SearchController.js',
-      './js/controller/SettingController.js',
-      './js/controller/StrongController.js'
+      './js/Controller/BookmarkController.js',
+      './js/Controller/HelpController.js',
+      './js/Controller/NavigatorController.js',
+      './js/Controller/ReadController.js',
+      './js/Controller/SearchController.js',
+      './js/Controller/SettingController.js',
+      './js/Controller/StrongController.js'
     ]
   },
   {
-    name: 'kjs-test-js-model-20191112.01',
+    name: 'kjs-test-js-model-20191112.02',
     urls: [
-      './js/model/BookmarkModel.js',
-      './js/model/HelpModel.js',
-      './js/model/NavigatorModel.js',
-      './js/model/ReadModel.js',
-      './js/model/SearchModel.js',
-      './js/model/SettingModel.js',
-      './js/model/StrongModel.js'
+      './js/Model/BookmarkModel.js',
+      './js/Model/HelpModel.js',
+      './js/Model/NavigatorModel.js',
+      './js/Model/ReadModel.js',
+      './js/Model/SearchModel.js',
+      './js/Model/SettingModel.js',
+      './js/Model/StrongModel.js'
     ]
   },
   {
-    name: 'kjs-test-js-tome-20191112.01',
+    name: 'kjs-test-js-tome-20191112.02',
     urls: [
       './js/tome/kjv.js',
       './js/tome/strong.js',
@@ -90,36 +90,36 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-js-view-20191112.01',
+    name: 'kjs-js-view-20191112.02',
     urls: [
-      './js/view/BookmarkExportView.js',
-      './js/view/BookmarkFolderAddView.js',
-      './js/view/BookmarkFolderDeleteView.js',
-      './js/view/BookmarkFolderRenameView.js',
-      './js/view/BookmarkFolderView.js',
-      './js/view/BookmarkImportView.js',
-      './js/view/BookmarkListView.js',
-      './js/view/BookmarkMoveCopyView.js',
-      './js/view/HelpReadView.js',
-      './js/view/HelpTopicView.js',
-      './js/view/NavigatorBookView.js',
-      './js/view/NavigatorChapterView.js',
-      './js/view/ReadView.js',
-      './js/view/SearchFilterView.js',
-      './js/view/SearchHistoryView.js',
-      './js/view/SearchLookupView.js',
-      './js/view/SearchResultView.js',
-      './js/view/SettingView.js',
-      './js/view/StrongDefView.js',
-      './js/view/StrongFilterView.js',
-      './js/view/StrongHistoryView.js',
-      './js/view/StrongLookupView.js',
-      './js/view/StrongResultView.js',
-      './js/view/StrongVerseView.js'
+      './js/View/BookmarkExportView.js',
+      './js/View/BookmarkFolderAddView.js',
+      './js/View/BookmarkFolderDeleteView.js',
+      './js/View/BookmarkFolderRenameView.js',
+      './js/View/BookmarkFolderView.js',
+      './js/View/BookmarkImportView.js',
+      './js/View/BookmarkListView.js',
+      './js/View/BookmarkMoveCopyView.js',
+      './js/View/HelpReadView.js',
+      './js/View/HelpTopicView.js',
+      './js/View/NavigatorBookView.js',
+      './js/View/NavigatorChapterView.js',
+      './js/View/ReadView.js',
+      './js/View/SearchFilterView.js',
+      './js/View/SearchHistoryView.js',
+      './js/View/SearchLookupView.js',
+      './js/View/SearchResultView.js',
+      './js/View/SettingView.js',
+      './js/View/StrongDefView.js',
+      './js/View/StrongFilterView.js',
+      './js/View/StrongHistoryView.js',
+      './js/View/StrongLookupView.js',
+      './js/View/StrongResultView.js',
+      './js/View/StrongVerseView.js'
     ]
   },
   {
-    name: 'kjs-png-20191112.01',
+    name: 'kjs-png-20191112.02',
     urls: [
       './favicon.png',
       './png/icon-032.png',

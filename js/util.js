@@ -10,7 +10,7 @@ import {
   idxVerseNum
 } from './tomeIdx.js';
 
-export const appPrefix = 'kjs';
+export const appPrefix = 'kjs-test';
 
 export const centerScrollElement = (scrollElement, element) => {
   let y = element.offsetTop -
