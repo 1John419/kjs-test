@@ -2,7 +2,7 @@ let appPrefix = 'kjs-test';
 
 let appCaches = [
   {
-    name: 'kjs-test-root-20191112.02',
+    name: 'kjs-test-root-20191112.03',
     urls: [
       './',
       './index.html',
@@ -13,7 +13,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-css-20191112.02',
+    name: 'kjs-test-css-20191112.03',
     urls: [
       './css/load.css',
       './css/kjs.css',
@@ -21,7 +21,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-font-20191112.02',
+    name: 'kjs-test-font-20191112.03',
     urls: [
       './font/lato-v15-latin-regular.woff2',
       './font/merriweather-v20-latin-regular.woff2',
@@ -32,7 +32,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-help-20191112.02',
+    name: 'kjs-test-help-20191112.03',
     urls: [
       './help/about.html',
       './help/bookmark.html',
@@ -47,7 +47,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-js-20191112.02',
+    name: 'kjs-test-js-20191112.03',
     urls: [
       './js/app.js',
       './js/EventBus.js',
@@ -58,7 +58,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-js-controller-20191112.02',
+    name: 'kjs-test-js-controller-20191112.03',
     urls: [
       './js/Controller/BookmarkController.js',
       './js/Controller/HelpController.js',
@@ -70,7 +70,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-js-model-20191112.02',
+    name: 'kjs-test-js-model-20191112.03',
     urls: [
       './js/Model/BookmarkModel.js',
       './js/Model/HelpModel.js',
@@ -82,15 +82,15 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-js-tome-20191112.02',
+    name: 'kjs-test-js-tome-20191112.03',
     urls: [
-      './js/tome/kjv.js',
-      './js/tome/strong.js',
-      './js/tome/tome.js'
+      './js/Tome/kjv.js',
+      './js/Tome/strong.js',
+      './js/Tome/tome.js'
     ]
   },
   {
-    name: 'kjs-js-view-20191112.02',
+    name: 'kjs-js-view-20191112.03',
     urls: [
       './js/View/BookmarkExportView.js',
       './js/View/BookmarkFolderAddView.js',
@@ -119,7 +119,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-png-20191112.02',
+    name: 'kjs-png-20191112.03',
     urls: [
       './favicon.png',
       './png/icon-032.png',
