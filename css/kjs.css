@@ -1,3 +1,9 @@
+*,
+::before,
+::after {
+  box-sizing: inherit;
+}
+
 a {
   color: var(--ui-border);
   font-weight: bold;
@@ -8,6 +14,13 @@ body {
   background-color: var(--ui-bg);
   border: 1px solid var(--ui-border);
   color: var(--ui-fg);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body * {
+  max-height: 1000000px;
 }
 
 button {
@@ -23,6 +36,12 @@ button {
   padding: 0;
 }
 
+h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 1.0rem 0;
+}
+
 h2 {
   font-size: 1.1rem;
   font-weight: 700;
@@ -33,6 +52,13 @@ h3 {
   font-size: 1.0rem;
   font-weight: 700;
   margin: 1.0rem 0 0.25rem 0;
+}
+
+html {
+  /* font-family: 'Roboto', sans-serif; */
+  font-family: sans-serif;
+  font-size: 16px;
+  height: 100%;
 }
 
 input {
@@ -48,7 +74,8 @@ input {
 }
 
 p {
-  margin-bottom: 1.0rem;
+  margin-bottom: 0 0 1.0rem 0;
+  padding: 0;
 }
 
 textarea {
@@ -264,6 +291,12 @@ button::-moz-focus-inner {
   column-count: 3;
 }
 
+.container {
+  display: flex;
+  flex-flow: row nowrap;
+  height: 100%;
+}
+
 .content {
   display: flex;
   flex-flow: row wrap;
@@ -291,6 +324,12 @@ button::-moz-focus-inner {
   padding: 0.5rem;
   resize: none;
   width: 100%;
+}
+
+.download {
+  background-color: hsl(0, 50%, 40%);
+  color: hsl(0, 0%, 100%);
+  fill: hsl(0, 0%, 100%);
 }
 
 .empty {
@@ -375,7 +414,27 @@ button::-moz-focus-inner {
   text-align: center;
 }
 
+.launch {
+  background-color: hsl(60, 100%, 50%);
+  color: hsl(0, 0%, 32%);
+  fill: hsl(0, 0%, 32%);
+}
+
 .load--hide {
+  display: none;
+}
+
+.load-banner {
+  font-size: 3.0rem;
+}
+
+.loading {
+  align-self: center;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.loading--hide {
   display: none;
 }
 
@@ -470,6 +529,25 @@ button::-moz-focus-inner {
   display: block;
   min-height: var(--target-size);
   text-align: left;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1.0s linear infinite;
+  margin: 3.0rem 0;
+}
+
+.status {
+  font-size: 3.0rem;
 }
 
 .strong-def--lemma {

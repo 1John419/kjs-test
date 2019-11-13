@@ -4,14 +4,35 @@ let prod = true;
 // let prod = false;
 let updateFound = false;
 let newInstall = false;
+let body = null;
+let status = null;
+
+// const sleep = (ms) => {
+//   return new Promise(resolve => setTimeout(resolve, ms));
+// };
 
 window.onload = () => {
   console.log(`window.onload:      ${Date.now()}`);
+
+  body = document.querySelector('body');
+  status = body.querySelector('.status');
+
+  body.classList.add('download');
+  status.textContent = 'Download...';
+
   if (prod) {
     swEvents();
   } else {
     loadApp();
   }
+
+  // sleep(2000).then(() => {
+  //   if (prod) {
+  //     swEvents();
+  //   } else {
+  //     loadApp();
+  //   }
+  // });
 };
 
 let swEvents = () => {
@@ -59,14 +80,6 @@ let refresh = () => {
 let loadApp = () => {
   console.log(`loadApp():          ${Date.now()}`);
 
-  let loading = document.querySelector('.loading');
-  loading.classList.add('loading--hide');
-
-  let css = document.createElement('link');
-  css.rel = 'stylesheet';
-  css.href = './css/kjs.css';
-  document.head.appendChild(css);
-
   let font = document.createElement('link');
   font.rel = 'stylesheet';
   font.href = './css/font.css';
@@ -76,4 +89,8 @@ let loadApp = () => {
   script.type = 'module';
   script.src = './js/app.js';
   document.body.appendChild(script);
+
+  body.classList.remove('download');
+  body.classList.add('launch');
+  status.textContent = 'Launch...';
 };
