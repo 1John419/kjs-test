@@ -10,4 +10,4 @@ Dedicated to our precious Lord and Saviour Jesus Christ.
 The application supports any Android, Windows, or Linux platform with the latest version of Google Chrome or Mozilla Firefox web browser. (It should also support the Safari web browser, but has not been tested on Mac/iOS platforms.)
 
 ### Download Link
-[kjs](https://1john419.github.io/kjs-test/)
+[kjs-test](https://1john419.github.io/kjs-test/)
