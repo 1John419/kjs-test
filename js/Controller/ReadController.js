@@ -2,6 +2,8 @@
 
 import { bus } from '../EventBus.js';
 
+const SIDEBAR_WIDTH = 320;
+
 class ReadController {
 
   constructor() {
@@ -16,8 +18,8 @@ class ReadController {
     bus.publish('bookmark.delete', verseIdx);
   }
 
-  chapterPkgUpdate(chapterPkg) {
-    this.chapterPkg = chapterPkg;
+  chapterIdxUpdate(chapterIdx) {
+    this.chapterIdx = chapterIdx;
   }
 
   columnSelect(column) {
@@ -73,7 +75,7 @@ class ReadController {
   }
 
   modeToggle() {
-    bus.publish('read.strong.mode.toggle', null);
+    bus.publish('read.strong-mode.toggle', null);
   }
 
   nextChapter() {
@@ -85,7 +87,7 @@ class ReadController {
   }
 
   setPanes() {
-    this.panes = Math.min(Math.floor(window.innerWidth / 320), 4);
+    this.panes = Math.min(Math.floor(window.innerWidth / SIDEBAR_WIDTH), 4);
     bus.publish('panes.change', this.panes);
   }
 
@@ -126,8 +128,8 @@ class ReadController {
   }
 
   subscribe() {
-    bus.subscribe('chapterPkg.update', (chapterPkg) => {
-      this.chapterPkgUpdate(chapterPkg);
+    bus.subscribe('chapterIdx.update', (chapterIdx) => {
+      this.chapterIdxUpdate(chapterIdx);
     });
 
     bus.subscribe('column.update', (column) => {
@@ -150,7 +152,7 @@ class ReadController {
     bus.subscribe('read.prev.chapter',
       () => { this.prevChapter(); }
     );
-    bus.subscribe('read.strong.mode.click', () => {
+    bus.subscribe('read.strong-mode.click', () => {
       this.modeToggle();
     });
     bus.subscribe('read.strong.select', (verseIdx) => {

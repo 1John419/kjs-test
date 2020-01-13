@@ -2,6 +2,9 @@
 
 /*eslint no-unused-vars: ["off"]*/
 
+import { initializeTome } from './data/tomeDb.js';
+import { initializeStrong } from './data/strongDb.js';
+
 import { ReadModel } from './Model/ReadModel.js';
 import { ReadView } from './View/ReadView.js';
 import { ReadController } from './Controller/ReadController.js';
@@ -47,7 +50,27 @@ import { HelpReadView } from './View/HelpReadView.js';
 import { HelpTopicView } from './View/HelpTopicView.js';
 import { HelpController } from './Controller/HelpController.js';
 
-(function() {
+const APP_FONT = 'font--roboto';
+
+let loadMsg = document.querySelector('.load-msg');
+let loadScroll = document.querySelector('.load-scroll');
+
+const progress = (msg) => {
+  loadMsg.innerHTML += msg + '<br>';
+  loadScroll.scrollTop = loadScroll.scrollHeight;
+};
+
+const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+(async function() {
+  let body = document.body;
+  let load = body.querySelector('.load');
+
+  await initializeTome(progress);
+  await initializeStrong(progress);
+
   let readModel = new ReadModel();
   let readView = new ReadView();
   let readController = new ReadController();
@@ -93,13 +116,12 @@ import { HelpController } from './Controller/HelpController.js';
   let helpTopicView = new HelpTopicView();
   let helpController = new HelpController();
 
-  let body = document.querySelector('body');
-  let loading = body.querySelector('.loading');
-
-  body.classList.remove('launch');
-  loading.classList.add('loading--hide');
+  // await sleep(5000);
+  load.classList.add('load--hide');
+  document.documentElement.classList.add(APP_FONT);
 
   console.log(`intializeApp():     ${Date.now()}`);
   readController.initializeApp();
   console.log(`ready:              ${Date.now()}`);
+
 })();

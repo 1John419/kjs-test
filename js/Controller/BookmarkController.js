@@ -1,8 +1,7 @@
 'use strict';
 
 import { bus } from '../EventBus.js';
-
-import { getChapterPkg } from '../util.js';
+import { chapterIdxByVerseIdx } from '../util.js';
 
 class BookmarkController {
 
@@ -65,8 +64,8 @@ class BookmarkController {
   }
 
   gotoBookmark(verseIdx) {
-    let chapterPkg = getChapterPkg(verseIdx);
-    bus.publish('chapterPkg.change', chapterPkg);
+    let chapterIdx = chapterIdxByVerseIdx(verseIdx);
+    bus.publish('chapterIdx.change', chapterIdx);
     if (this.panes === 1) {
       bus.publish('sidebar.select', 'none');
     }
@@ -118,13 +117,12 @@ class BookmarkController {
   }
 
   modeToggle() {
-    bus.publish('bookmark.strong.mode.toggle', null);
+    bus.publish('bookmark.strong-mode.toggle', null);
   }
 
   moveCopy(verseIdx) {
     bus.publish('move-copy.list.change', verseIdx);
-    bus.publish('verse.to.move-copy', verseIdx);
-    bus.publish('bookmark.task.change', 'bookmark-move-copy');
+    bus.publish('bookmark.move-copy.change', verseIdx);
   }
 
   moveCopyCopy(copyPkg) {
@@ -133,6 +131,10 @@ class BookmarkController {
 
   moveCopyMove(movePkg) {
     bus.publish('bookmark.move', movePkg);
+  }
+
+  moveCopyReady() {
+    bus.publish('bookmark.task.change', 'bookmark-move-copy');
   }
 
   panesUpdate(panes) {
@@ -233,6 +235,9 @@ class BookmarkController {
     bus.subscribe('bookmark-move-copy.move', (movePkg) => {
       this.moveCopyMove(movePkg);
     });
+    bus.subscribe('bookmark-move-copy.ready', () => {
+      this.moveCopyReady();
+    });
 
     bus.subscribe('bookmark.back', () => {
       this.back();
@@ -249,7 +254,7 @@ class BookmarkController {
     bus.subscribe('bookmark.show', () => {
       this.show();
     });
-    bus.subscribe('bookmark.strong.mode.click', () => {
+    bus.subscribe('bookmark.strong-mode.click', () => {
       this.modeToggle();
     });
     bus.subscribe('bookmark.task.update', (bookmarkTask) => {

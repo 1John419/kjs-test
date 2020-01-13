@@ -2,25 +2,28 @@ let appPrefix = 'kjs-test';
 
 let appCaches = [
   {
-    name: 'kjs-test-root-20191112.04',
+    name: 'kjs-test-core-20200112.01',
     urls: [
       './',
-      './index.html',
-      './load.js',
-      './manifest.json',
-      './sw.js',
+      './bundle.js',
+      './favicon.png',
       './icons.svg',
+      './index.html',
+      './js/load.js',
+      './manifest.json',
+      './robots.txt',
+      './sw.js'
     ]
   },
   {
-    name: 'kjs-test-css-20191112.04',
+    name: 'kjs-test-css-20200112.01',
     urls: [
       './css/kjs.css',
       './css/font.css'
     ]
   },
   {
-    name: 'kjs-test-font-20191112.04',
+    name: 'kjs-test-font-20200112.01',
     urls: [
       './font/lato-v15-latin-regular.woff2',
       './font/merriweather-v20-latin-regular.woff2',
@@ -31,7 +34,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-help-20191112.04',
+    name: 'kjs-test-help-20200112.01',
     urls: [
       './help/about.html',
       './help/bookmark.html',
@@ -46,79 +49,14 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-js-20191112.04',
+    name: 'kjs-test-lzma-20200112.01',
     urls: [
-      './js/app.js',
-      './js/EventBus.js',
-      './js/SearchEngine.js',
-      './js/template.js',
-      './js/tomeIdx.js',
-      './js/util.js'
+      './lzma/strong.json.lzma',
+      './lzma/tome.kjv.json.lzma'
     ]
   },
   {
-    name: 'kjs-test-js-controller-20191112.04',
-    urls: [
-      './js/Controller/BookmarkController.js',
-      './js/Controller/HelpController.js',
-      './js/Controller/NavigatorController.js',
-      './js/Controller/ReadController.js',
-      './js/Controller/SearchController.js',
-      './js/Controller/SettingController.js',
-      './js/Controller/StrongController.js'
-    ]
-  },
-  {
-    name: 'kjs-test-js-model-20191112.04',
-    urls: [
-      './js/Model/BookmarkModel.js',
-      './js/Model/HelpModel.js',
-      './js/Model/NavigatorModel.js',
-      './js/Model/ReadModel.js',
-      './js/Model/SearchModel.js',
-      './js/Model/SettingModel.js',
-      './js/Model/StrongModel.js'
-    ]
-  },
-  {
-    name: 'kjs-test-js-tome-20191112.04',
-    urls: [
-      './js/Tome/kjv.js',
-      './js/Tome/strong.js',
-      './js/Tome/tome.js'
-    ]
-  },
-  {
-    name: 'kjs-test-js-view-20191112.04',
-    urls: [
-      './js/View/BookmarkExportView.js',
-      './js/View/BookmarkFolderAddView.js',
-      './js/View/BookmarkFolderDeleteView.js',
-      './js/View/BookmarkFolderRenameView.js',
-      './js/View/BookmarkFolderView.js',
-      './js/View/BookmarkImportView.js',
-      './js/View/BookmarkListView.js',
-      './js/View/BookmarkMoveCopyView.js',
-      './js/View/HelpReadView.js',
-      './js/View/HelpTopicView.js',
-      './js/View/NavigatorBookView.js',
-      './js/View/NavigatorChapterView.js',
-      './js/View/ReadView.js',
-      './js/View/SearchFilterView.js',
-      './js/View/SearchHistoryView.js',
-      './js/View/SearchLookupView.js',
-      './js/View/SearchResultView.js',
-      './js/View/SettingView.js',
-      './js/View/StrongDefView.js',
-      './js/View/StrongFilterView.js',
-      './js/View/StrongHistoryView.js',
-      './js/View/StrongLookupView.js',
-      './js/View/StrongResultView.js',
-      './js/View/StrongVerseView.js'
-    ]
-  },
-  {
-    name: 'kjs-test-png-20191112.04',
+    name: 'kjs-test-png-20200112.01',
     urls: [
       './favicon.png',
       './png/icon-032.png',
@@ -129,7 +67,7 @@ let appCaches = [
       './png/touch-icon-167.png',
       './png/touch-icon-180.png'
     ]
-  },
+  }
 ];
 
 let cacheNames = appCaches.map((cache) => cache.name);

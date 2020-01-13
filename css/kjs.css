@@ -55,7 +55,6 @@ h3 {
 }
 
 html {
-  /* font-family: 'Roboto', sans-serif; */
   font-family: sans-serif;
   font-size: 16px;
   height: 100%;
@@ -191,13 +190,15 @@ button::-moz-focus-inner {
 }
 
 .btn-font-size {
-  height: var(--target-size);
-  margin: 0;
-  padding: 3px;
-  width: var(--target-size);
+  border: solid 1px var(--ui-fill);
+  border-radius: var(--border-radius);
+  color: var(--ui-fill);
+  height: calc(var(--target-size) - 8px);
+  margin: 3px;
+  width: calc(var(--target-size) - 8px);
 }
 
-.btn-font-size--active .font-size-label{
+.btn-font-size--active {
   background-color: var(--ui-tool-comp);
 }
 
@@ -240,7 +241,7 @@ button::-moz-focus-inner {
 }
 
 .btn-strong-def {
-  border: dashed 1px;
+  border: solid 1px;
   border-radius: var(--border-radius);
   height: var(--target-size);
   margin: 0 0.25rem 0.25rem 0.25rem;
@@ -326,12 +327,6 @@ button::-moz-focus-inner {
   width: 100%;
 }
 
-.download {
-  background-color: hsl(0, 50%, 40%);
-  color: hsl(0, 0%, 100%);
-  fill: hsl(0, 0%, 100%);
-}
-
 .empty {
   height: var(--target-size);
   padding-top: 1.0rem;
@@ -369,19 +364,6 @@ button::-moz-focus-inner {
   margin: 0;
 }
 
-.font-size-label {
-  border: solid 1px var(--ui-fill);
-  border-radius: var(--border-radius);
-  color: var(--ui-fill);
-  display: table-cell;
-  height: calc(var(--target-size) - 6px);
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  vertical-align: middle;
-  width: calc(var(--target-size) - 6px);
-}
-
 .icon-description {
   flex: 1 1 auto;
   align-self: center;
@@ -414,10 +396,13 @@ button::-moz-focus-inner {
   text-align: center;
 }
 
-.launch {
-  background-color: hsl(60, 100%, 50%);
-  color: hsl(0, 0%, 32%);
-  fill: hsl(0, 0%, 32%);
+.load {
+  background-color: hsl(0, 0%, 82%);
+  color: hsl(0, 0%, 5%);
+  display: flex;
+  flex: 1 1 auto;
+  flex-flow: column nowrap;
+  overflow: auto;
 }
 
 .load--hide {
@@ -425,17 +410,36 @@ button::-moz-focus-inner {
 }
 
 .load-banner {
-  font-size: 3.0rem;
-}
-
-.loading {
   align-self: center;
+  background-color: transparent;
   flex: 1 1 auto;
+  overflow: hidden;
+  padding: 0 0.5rem;
   text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.loading--hide {
-  display: none;
+.load-bar {
+  background-color: hsl(0, 0%, 62%);
+  display: flex;
+  flex: 0 0 calc(var(--target-size) + 1px);
+  flex-flow: row nowrap;
+}
+
+.load-bar--lower {
+  border-top: 1px solid black;
+}
+
+.load-bar--upper {
+  border-bottom: 1px solid black;
+}
+
+.load-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.5rem;
+  text-align: center;
 }
 
 .message--bookmark-import {
@@ -521,6 +525,7 @@ button::-moz-focus-inner {
   border: solid 1px var(--ui-border);
   display: flex;
   flex-flow: row nowrap;
+  height: var(--target-size);
   justify-content: center;
   margin-bottom: 1.0rem;
 }
@@ -529,25 +534,6 @@ button::-moz-focus-inner {
   display: block;
   min-height: var(--target-size);
   text-align: left;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.spinner {
-  animation: spin 1.0s linear infinite;
-  margin: 3.0rem 0;
-}
-
-.status {
-  font-size: 3.0rem;
 }
 
 .strong-def--lemma {
