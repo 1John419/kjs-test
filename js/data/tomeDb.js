@@ -9,7 +9,7 @@ const tomeStores = {
   words: 'k'
 };
 
-const tomeLzmaUrl = '/lzma/tome.kjv.json.lzma';
+const tomeLzmaUrl = '../../lzma/tome.kjv.json.lzma';
 const tomeName = 'KJV';
 
 let progress = null;

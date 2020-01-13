@@ -10,7 +10,7 @@ const strongStores = {
   words: 'k'
 };
 
-const strongLzmaUrl = '/lzma/strong.json.lzma';
+const strongLzmaUrl = '../../lzma/strong.json.lzma';
 
 let progress = null;
 let strongCitations = {};
