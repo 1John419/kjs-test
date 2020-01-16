@@ -25,20 +25,20 @@ class NavigatorModel {
     this.initialize();
   }
 
-  chapterNext() {
+  async chapterNext() {
     let nextChapterIdx = this.chapterIdx + 1;
     if (nextChapterIdx >= tomeChapters.length) {
       nextChapterIdx = 0;
     }
-    this.chapterIdxChange(nextChapterIdx);
+    await this.chapterIdxChange(nextChapterIdx);
   }
 
-  chapterPrev() {
+  async chapterPrev() {
     let prevChapterIdx = this.chapterIdx - 1;
     if (prevChapterIdx < 0) {
       prevChapterIdx = tomeChapters.length - 1;
     }
-    this.chapterIdxChange(prevChapterIdx);
+    await this.chapterIdxChange(prevChapterIdx);
   }
 
   initialize() {
@@ -54,12 +54,12 @@ class NavigatorModel {
     bus.publish('chapterIdx.update', this.chapterIdx);
   }
 
-  restore() {
+  async restore() {
     this.restoreTask();
-    this.restoreChapterIdx();
+    await this.restoreChapterIdx();
   }
 
-  restoreChapterIdx() {
+  async restoreChapterIdx() {
     let defaultIdx = IDX_GENESIS_1;
     let chapterIdx = localStorage.getItem(`${appPrefix}-chapterIdx`);
     if (!chapterIdx) {
@@ -74,7 +74,7 @@ class NavigatorModel {
         chapterIdx = defaultIdx;
       }
     }
-    this.chapterIdxChange(chapterIdx);
+    await this.chapterIdxChange(chapterIdx);
   }
 
   restoreTask() {
@@ -106,19 +106,19 @@ class NavigatorModel {
   }
 
   subscribe() {
-    bus.subscribe('chapter.next', () => {
-      this.chapterNext();
+    bus.subscribe('chapter.next', async () => {
+      await this.chapterNext();
     });
-    bus.subscribe('chapter.prev', () => {
-      this.chapterPrev();
-    });
-
-    bus.subscribe('chapterIdx.change', (chapterIdx) => {
-      this.chapterIdxChange(chapterIdx);
+    bus.subscribe('chapter.prev', async () => {
+      await this.chapterPrev();
     });
 
-    bus.subscribe('navigator.restore', () => {
-      this.restore();
+    bus.subscribe('chapterIdx.change', async (chapterIdx) => {
+      await this.chapterIdxChange(chapterIdx);
+    });
+
+    bus.subscribe('navigator.restore', async () => {
+      await this.restore();
     });
     bus.subscribe('navigator.task.change', (navigatorTask) => {
       this.taskChange(navigatorTask);

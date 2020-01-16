@@ -272,12 +272,12 @@ class SearchModel {
       this.historyUp(query);
     });
 
-    bus.subscribe('search.query.change', (query) => {
-      this.queryChange(query);
+    bus.subscribe('search.query.change', async (query) => {
+      await this.queryChange(query);
     });
 
-    bus.subscribe('search.restore', () => {
-      this.restore();
+    bus.subscribe('search.restore', async () => {
+      await this.restore();
     });
     bus.subscribe('search.strong-mode.toggle', () => {
       this.modeToogle();

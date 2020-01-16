@@ -13,6 +13,16 @@ class BookmarkController {
     bus.publish('sidebar.change', 'none');
   }
 
+  chapterIdxUpdate() {
+    if (this.selectVerseIdx) {
+      if (this.panes === 1) {
+        bus.publish('sidebar.select', 'none');
+      }
+      bus.publish('read.scroll-to-verse', this.selectVerseIdx);
+      this.selectVerseIdx = null;
+    }
+  }
+
   export() {
     bus.publish('bookmark.task.change', 'bookmark-export');
   }
@@ -64,12 +74,9 @@ class BookmarkController {
   }
 
   gotoBookmark(verseIdx) {
+    this.selectVerseIdx = verseIdx;
     let chapterIdx = chapterIdxByVerseIdx(verseIdx);
     bus.publish('chapterIdx.change', chapterIdx);
-    if (this.panes === 1) {
-      bus.publish('sidebar.select', 'none');
-    }
-    bus.publish('read.scroll-to-verse', verseIdx);
   }
 
   hide() {
@@ -259,6 +266,10 @@ class BookmarkController {
     });
     bus.subscribe('bookmark.task.update', (bookmarkTask) => {
       this.taskUpdate(bookmarkTask);
+    });
+
+    bus.subscribe('chapterIdx.update', () => {
+      this.chapterIdxUpdate();
     });
 
     bus.subscribe('panes.update', (panes) => {

@@ -52,7 +52,7 @@ class StrongModel {
       this.strongIdx = this.strongHistory.indexOf(this.strongDef);
       this.strongDefObj = await strongDb.defs.get(this.strongDef);
       this.strongWordObj = await strongDb.words.get(this.strongDef);
-      await this.updateNum();
+      this.updateNum();
       bus.publish('strong.def.update', this.strongDefObj);
       await this.wordFirst();
     }
@@ -65,7 +65,7 @@ class StrongModel {
     this.strongIdx = this.strongHistory.indexOf(this.strongDef);
     this.strongDefObj = await strongDb.defs.get(this.strongDef);
     this.strongWordObj = await strongDb.words.get(this.strongDef);
-    await this.updateNum();
+    this.updateNum();
     bus.publish('strong.def.update', this.strongDefObj);
     await this.wordFirst();
   }
@@ -153,7 +153,7 @@ class StrongModel {
     this.restoreHistory();
     await this.restoreDef();
     this.strongIdx = this.strongHistory.findIndex(x => x === this.strongDef);
-    this.restoreWord();
+    await this.restoreWord();
     this.restoreFilter();
     await this.restoreVerseIdx();
     this.restoreMode();
@@ -272,7 +272,7 @@ class StrongModel {
     await this.verseIdxChange(strongVerseIdx);
   }
 
-  restoreWord() {
+  async restoreWord() {
     let defaultWord = null;
     let strongWord = localStorage.getItem(`${appPrefix}-strongWord`);
     if (!strongWord) {
@@ -287,7 +287,7 @@ class StrongModel {
         strongWord = defaultWord;
       }
     }
-    this.wordChange(strongWord);
+    await this.wordChange(strongWord);
   }
 
   saveDef() {
@@ -325,20 +325,20 @@ class StrongModel {
       JSON.stringify(this.strongWord));
   }
 
-  strongNext() {
+  async strongNext() {
     this.strongIdx -= 1;
     if (this.strongIdx < 0) {
       this.strongIdx = this.strongHistory.length - 1;
     }
-    this.defChange(this.strongHistory[this.strongIdx]);
+    await this.defChange(this.strongHistory[this.strongIdx]);
   }
 
-  strongPrev() {
+  async strongPrev() {
     this.strongIdx += 1;
     if (this.strongIdx >= this.strongHistory.length) {
       this.strongIdx = 0;
     }
-    this.defChange(this.strongHistory[this.strongIdx]);
+    await this.defChange(this.strongHistory[this.strongIdx]);
   }
 
   subscribe() {
@@ -366,15 +366,15 @@ class StrongModel {
       this.historyUp(strongDef);
     });
 
-    bus.subscribe('strong.next', () => {
-      this.strongNext();
+    bus.subscribe('strong.next', async () => {
+      await this.strongNext();
     });
-    bus.subscribe('strong.prev', () => {
-      this.strongPrev();
+    bus.subscribe('strong.prev', async () => {
+      await this.strongPrev();
     });
 
-    bus.subscribe('strong.restore', () => {
-      this.restore();
+    bus.subscribe('strong.restore', async () => {
+      await this.restore();
     });
     bus.subscribe('strong.strong-mode.toggle', () => {
       this.modeToogle();
@@ -382,11 +382,11 @@ class StrongModel {
     bus.subscribe('strong.task.change', (strongTask) => {
       this.taskChange(strongTask);
     });
-    bus.subscribe('strong.verse.change', (verseIdx) => {
-      this.verseIdxChange(verseIdx);
+    bus.subscribe('strong.verse.change', async (verseIdx) => {
+      await this.verseIdxChange(verseIdx);
     });
-    bus.subscribe('strong.word.change', (strongWord) => {
-      this.wordChange(strongWord);
+    bus.subscribe('strong.word.change', async (strongWord) => {
+      await this.wordChange(strongWord);
     });
   }
 
@@ -408,7 +408,7 @@ class StrongModel {
     bus.publish('strong.history.update', this.strongHistory);
   }
 
-  async updateNum() {
+  updateNum() {
     this.words = this.strongWordObj.v;
     bus.publish('strong.wordObj.update', this.strongWordObj);
   }

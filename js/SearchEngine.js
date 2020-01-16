@@ -107,7 +107,6 @@ class SearchEngine {
 
   buildCombinations() {
     this.combinations = product(this.patterns);
-    console.log();
   }
 
   buildIntersects() {

@@ -44,11 +44,14 @@ class NavigatorController {
     bus.publish('navigator.task.change', 'navigator-chapter');
   }
 
-  chapterSelect(chapterIdx) {
-    bus.publish('chapterIdx.change', chapterIdx);
+  chapterIdxUpdate() {
     if (this.panes === 1) {
       bus.publish('sidebar.select', 'none');
     }
+  }
+
+  chapterSelect(chapterIdx) {
+    bus.publish('chapterIdx.change', chapterIdx);
   }
 
   hide() {
@@ -73,6 +76,10 @@ class NavigatorController {
   }
 
   subscribe() {
+    bus.subscribe('chapterIdx.update', () => {
+      this.chapterIdxUpdate();
+    });
+
     bus.subscribe('navigator-book', () => {
       this.book();
     });

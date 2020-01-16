@@ -18,10 +18,6 @@ class ReadController {
     bus.publish('bookmark.delete', verseIdx);
   }
 
-  chapterIdxUpdate(chapterIdx) {
-    this.chapterIdx = chapterIdx;
-  }
-
   columnSelect(column) {
     this.column = column;
     bus.publish('column.change', column);
@@ -112,7 +108,9 @@ class ReadController {
         bus.publish(`${this.sidebar}.show`, null);
       } else {
         bus.publish('read.show', null);
-        bus.publish(`${this.sidebar}.hide`, null);
+        if (this.sidebar !== 'none') {
+          bus.publish(`${this.sidebar}.hide`, null);
+        }
         this.sidebar = sidebar;
         bus.publish(`${this.sidebar}.show`, null);
       }
@@ -128,10 +126,6 @@ class ReadController {
   }
 
   subscribe() {
-    bus.subscribe('chapterIdx.update', (chapterIdx) => {
-      this.chapterIdxUpdate(chapterIdx);
-    });
-
     bus.subscribe('column.update', (column) => {
       this.columnUpdate(column);
     });

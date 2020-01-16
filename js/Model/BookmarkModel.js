@@ -467,8 +467,8 @@ class BookmarkModel {
       this.moveCopyListChange(verseIdx);
     });
 
-    bus.subscribe('bookmark.move-copy.change', (verseIdx) => {
-      this.moveCopyChange(verseIdx);
+    bus.subscribe('bookmark.move-copy.change', async (verseIdx) => {
+      await this.moveCopyChange(verseIdx);
     });
   }
 

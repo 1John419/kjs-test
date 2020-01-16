@@ -5356,10 +5356,11 @@
         this.topics = {};
       }
 
-      publish(topic, data) {
+      async publish(topic, data) {
+        // console.log(topic);
         if (this.topics[topic] && this.topics[topic].length >= 1) {
           for (let listener of this.topics[topic]) {
-            listener(data);
+            await listener(data);
           }
         }
       }
@@ -6022,6 +6023,10 @@
           this.bookmarkShow();
         });
 
+        bus.subscribe('chapterIdx.update', (chapterIdx) => {
+          this.chapterIdxUpdate(chapterIdx);
+        });
+
         bus.subscribe('column.update', (column) => {
           this.columnUpdate(column);
         });
@@ -6059,9 +6064,6 @@
           this.panesUpdate(panes);
         });
 
-        bus.subscribe('chapterIdx.update', (chapterIdx) => {
-          this.chapterIdxUpdate(chapterIdx);
-        });
         bus.subscribe('read.hide', () => {
           this.hide();
         });
@@ -6236,10 +6238,6 @@
         bus.publish('bookmark.delete', verseIdx);
       }
 
-      chapterIdxUpdate(chapterIdx) {
-        this.chapterIdx = chapterIdx;
-      }
-
       columnSelect(column) {
         this.column = column;
         bus.publish('column.change', column);
@@ -6330,7 +6328,9 @@
             bus.publish(`${this.sidebar}.show`, null);
           } else {
             bus.publish('read.show', null);
-            bus.publish(`${this.sidebar}.hide`, null);
+            if (this.sidebar !== 'none') {
+              bus.publish(`${this.sidebar}.hide`, null);
+            }
             this.sidebar = sidebar;
             bus.publish(`${this.sidebar}.show`, null);
           }
@@ -6346,10 +6346,6 @@
       }
 
       subscribe() {
-        bus.subscribe('chapterIdx.update', (chapterIdx) => {
-          this.chapterIdxUpdate(chapterIdx);
-        });
-
         bus.subscribe('column.update', (column) => {
           this.columnUpdate(column);
         });
@@ -6413,20 +6409,20 @@
         this.initialize();
       }
 
-      chapterNext() {
+      async chapterNext() {
         let nextChapterIdx = this.chapterIdx + 1;
         if (nextChapterIdx >= tomeChapters.length) {
           nextChapterIdx = 0;
         }
-        this.chapterIdxChange(nextChapterIdx);
+        await this.chapterIdxChange(nextChapterIdx);
       }
 
-      chapterPrev() {
+      async chapterPrev() {
         let prevChapterIdx = this.chapterIdx - 1;
         if (prevChapterIdx < 0) {
           prevChapterIdx = tomeChapters.length - 1;
         }
-        this.chapterIdxChange(prevChapterIdx);
+        await this.chapterIdxChange(prevChapterIdx);
       }
 
       initialize() {
@@ -6442,12 +6438,12 @@
         bus.publish('chapterIdx.update', this.chapterIdx);
       }
 
-      restore() {
+      async restore() {
         this.restoreTask();
-        this.restoreChapterIdx();
+        await this.restoreChapterIdx();
       }
 
-      restoreChapterIdx() {
+      async restoreChapterIdx() {
         let defaultIdx = IDX_GENESIS_1;
         let chapterIdx = localStorage.getItem(`${appPrefix}-chapterIdx`);
         if (!chapterIdx) {
@@ -6462,7 +6458,7 @@
             chapterIdx = defaultIdx;
           }
         }
-        this.chapterIdxChange(chapterIdx);
+        await this.chapterIdxChange(chapterIdx);
       }
 
       restoreTask() {
@@ -6494,19 +6490,19 @@
       }
 
       subscribe() {
-        bus.subscribe('chapter.next', () => {
-          this.chapterNext();
+        bus.subscribe('chapter.next', async () => {
+          await this.chapterNext();
         });
-        bus.subscribe('chapter.prev', () => {
-          this.chapterPrev();
-        });
-
-        bus.subscribe('chapterIdx.change', (chapterIdx) => {
-          this.chapterIdxChange(chapterIdx);
+        bus.subscribe('chapter.prev', async () => {
+          await this.chapterPrev();
         });
 
-        bus.subscribe('navigator.restore', () => {
-          this.restore();
+        bus.subscribe('chapterIdx.change', async (chapterIdx) => {
+          await this.chapterIdxChange(chapterIdx);
+        });
+
+        bus.subscribe('navigator.restore', async () => {
+          await this.restore();
         });
         bus.subscribe('navigator.task.change', (navigatorTask) => {
           this.taskChange(navigatorTask);
@@ -6941,11 +6937,14 @@
         bus.publish('navigator.task.change', 'navigator-chapter');
       }
 
-      chapterSelect(chapterIdx) {
-        bus.publish('chapterIdx.change', chapterIdx);
+      chapterIdxUpdate() {
         if (this.panes === 1) {
           bus.publish('sidebar.select', 'none');
         }
+      }
+
+      chapterSelect(chapterIdx) {
+        bus.publish('chapterIdx.change', chapterIdx);
       }
 
       hide() {
@@ -6970,6 +6969,10 @@
       }
 
       subscribe() {
+        bus.subscribe('chapterIdx.update', () => {
+          this.chapterIdxUpdate();
+        });
+
         bus.subscribe('navigator-book', () => {
           this.book();
         });
@@ -7477,8 +7480,8 @@
           this.moveCopyListChange(verseIdx);
         });
 
-        bus.subscribe('bookmark.move-copy.change', (verseIdx) => {
-          this.moveCopyChange(verseIdx);
+        bus.subscribe('bookmark.move-copy.change', async (verseIdx) => {
+          await this.moveCopyChange(verseIdx);
         });
       }
 
@@ -8893,6 +8896,16 @@
         bus.publish('sidebar.change', 'none');
       }
 
+      chapterIdxUpdate() {
+        if (this.selectVerseIdx) {
+          if (this.panes === 1) {
+            bus.publish('sidebar.select', 'none');
+          }
+          bus.publish('read.scroll-to-verse', this.selectVerseIdx);
+          this.selectVerseIdx = null;
+        }
+      }
+
       export() {
         bus.publish('bookmark.task.change', 'bookmark-export');
       }
@@ -8944,12 +8957,9 @@
       }
 
       gotoBookmark(verseIdx) {
+        this.selectVerseIdx = verseIdx;
         let chapterIdx = chapterIdxByVerseIdx(verseIdx);
         bus.publish('chapterIdx.change', chapterIdx);
-        if (this.panes === 1) {
-          bus.publish('sidebar.select', 'none');
-        }
-        bus.publish('read.scroll-to-verse', verseIdx);
       }
 
       hide() {
@@ -9141,6 +9151,10 @@
           this.taskUpdate(bookmarkTask);
         });
 
+        bus.subscribe('chapterIdx.update', () => {
+          this.chapterIdxUpdate();
+        });
+
         bus.subscribe('panes.update', (panes) => {
           this.panesUpdate(panes);
         });
@@ -9258,7 +9272,6 @@
 
       buildCombinations() {
         this.combinations = product(this.patterns);
-        console.log();
       }
 
       buildIntersects() {
@@ -9738,12 +9751,12 @@
           this.historyUp(query);
         });
 
-        bus.subscribe('search.query.change', (query) => {
-          this.queryChange(query);
+        bus.subscribe('search.query.change', async (query) => {
+          await this.queryChange(query);
         });
 
-        bus.subscribe('search.restore', () => {
-          this.restore();
+        bus.subscribe('search.restore', async () => {
+          await this.restore();
         });
         bus.subscribe('search.strong-mode.toggle', () => {
           this.modeToogle();
@@ -10791,6 +10804,16 @@
         bus.publish('sidebar.change', 'none');
       }
 
+      chapterIdxUpdate() {
+        if (this.selectVerseIdx) {
+          if (this.panes === 1) {
+            bus.publish('sidebar.select', 'none');
+          }
+          bus.publish('read.scroll-to-verse', this.selectVerseIdx);
+          this.selectVerseIdx = null;
+        }
+      }
+
       filter() {
         bus.publish('search.task.change', 'search-filter');
       }
@@ -10860,12 +10883,9 @@
       }
 
       readSelect(verseIdx) {
+        this.selectVerseIdx = verseIdx;
         let chapterIdx = chapterIdxByVerseIdx(verseIdx);
         bus.publish('chapterIdx.change', chapterIdx);
-        if (this.panes === 1) {
-          bus.publish('sidebar.select', 'none');
-        }
-        bus.publish('read.scroll-to-verse', verseIdx);
       }
 
       result() {
@@ -10887,6 +10907,10 @@
       }
 
       subscribe() {
+        bus.subscribe('chapterIdx.update', () => {
+          this.chapterIdxUpdate();
+        });
+
         bus.subscribe('panes.update', (panes) => {
           this.panesUpdate(panes);
         });
@@ -11012,7 +11036,7 @@
           this.strongIdx = this.strongHistory.indexOf(this.strongDef);
           this.strongDefObj = await strongDb.defs.get(this.strongDef);
           this.strongWordObj = await strongDb.words.get(this.strongDef);
-          await this.updateNum();
+          this.updateNum();
           bus.publish('strong.def.update', this.strongDefObj);
           await this.wordFirst();
         }
@@ -11025,7 +11049,7 @@
         this.strongIdx = this.strongHistory.indexOf(this.strongDef);
         this.strongDefObj = await strongDb.defs.get(this.strongDef);
         this.strongWordObj = await strongDb.words.get(this.strongDef);
-        await this.updateNum();
+        this.updateNum();
         bus.publish('strong.def.update', this.strongDefObj);
         await this.wordFirst();
       }
@@ -11113,7 +11137,7 @@
         this.restoreHistory();
         await this.restoreDef();
         this.strongIdx = this.strongHistory.findIndex(x => x === this.strongDef);
-        this.restoreWord();
+        await this.restoreWord();
         this.restoreFilter();
         await this.restoreVerseIdx();
         this.restoreMode();
@@ -11232,7 +11256,7 @@
         await this.verseIdxChange(strongVerseIdx);
       }
 
-      restoreWord() {
+      async restoreWord() {
         let defaultWord = null;
         let strongWord = localStorage.getItem(`${appPrefix}-strongWord`);
         if (!strongWord) {
@@ -11247,7 +11271,7 @@
             strongWord = defaultWord;
           }
         }
-        this.wordChange(strongWord);
+        await this.wordChange(strongWord);
       }
 
       saveDef() {
@@ -11285,20 +11309,20 @@
           JSON.stringify(this.strongWord));
       }
 
-      strongNext() {
+      async strongNext() {
         this.strongIdx -= 1;
         if (this.strongIdx < 0) {
           this.strongIdx = this.strongHistory.length - 1;
         }
-        this.defChange(this.strongHistory[this.strongIdx]);
+        await this.defChange(this.strongHistory[this.strongIdx]);
       }
 
-      strongPrev() {
+      async strongPrev() {
         this.strongIdx += 1;
         if (this.strongIdx >= this.strongHistory.length) {
           this.strongIdx = 0;
         }
-        this.defChange(this.strongHistory[this.strongIdx]);
+        await this.defChange(this.strongHistory[this.strongIdx]);
       }
 
       subscribe() {
@@ -11326,15 +11350,15 @@
           this.historyUp(strongDef);
         });
 
-        bus.subscribe('strong.next', () => {
-          this.strongNext();
+        bus.subscribe('strong.next', async () => {
+          await this.strongNext();
         });
-        bus.subscribe('strong.prev', () => {
-          this.strongPrev();
+        bus.subscribe('strong.prev', async () => {
+          await this.strongPrev();
         });
 
-        bus.subscribe('strong.restore', () => {
-          this.restore();
+        bus.subscribe('strong.restore', async () => {
+          await this.restore();
         });
         bus.subscribe('strong.strong-mode.toggle', () => {
           this.modeToogle();
@@ -11342,11 +11366,11 @@
         bus.subscribe('strong.task.change', (strongTask) => {
           this.taskChange(strongTask);
         });
-        bus.subscribe('strong.verse.change', (verseIdx) => {
-          this.verseIdxChange(verseIdx);
+        bus.subscribe('strong.verse.change', async (verseIdx) => {
+          await this.verseIdxChange(verseIdx);
         });
-        bus.subscribe('strong.word.change', (strongWord) => {
-          this.wordChange(strongWord);
+        bus.subscribe('strong.word.change', async (strongWord) => {
+          await this.wordChange(strongWord);
         });
       }
 
@@ -11368,7 +11392,7 @@
         bus.publish('strong.history.update', this.strongHistory);
       }
 
-      async updateNum() {
+      updateNum() {
         this.words = this.strongWordObj.v;
         bus.publish('strong.wordObj.update', this.strongWordObj);
       }
@@ -12950,6 +12974,16 @@
         bus.publish('sidebar.change', 'none');
       }
 
+      chapterIdxUpdate() {
+        if (this.selectVerseIdx) {
+          if (this.panes === 1) {
+            bus.publish('sidebar.select', 'none');
+          }
+          bus.publish('read.scroll-to-verse', this.selectVerseIdx);
+          this.selectVerseIdx = null;
+        }
+      }
+
       def() {
         bus.publish('strong.task.change', 'strong-def');
       }
@@ -12958,8 +12992,7 @@
         bus.publish('strong.def.sub-change', strongDef);
       }
 
-      defUpdate(strongDefObj) {
-        this.strongDefObj = strongDefObj;
+      defUpdate() {
         bus.publish('strong.task.change', 'strong-def');
       }
 
@@ -13030,12 +13063,9 @@
       }
 
       readSelect(verseIdx) {
+        this.selectVerseIdx = verseIdx;
         let chapterIdx = chapterIdxByVerseIdx(verseIdx);
         bus.publish('chapterIdx.change', chapterIdx);
-        if (this.panes === 1) {
-          bus.publish('sidebar.select', 'none');
-        }
-        bus.publish('read.scroll-to-verse', verseIdx);
       }
 
       show() {
@@ -13056,6 +13086,10 @@
       }
 
       subscribe() {
+        bus.subscribe('chapterIdx.update', () => {
+          this.chapterIdxUpdate();
+        });
+
         bus.subscribe('panes.update', (panes) => {
           this.panesUpdate(panes);
         });
@@ -13133,8 +13167,8 @@
         bus.subscribe('strong.back', () => {
           this.back();
         });
-        bus.subscribe('strong.def.update', (strongDefObj) => {
-          this.defUpdate(strongDefObj);
+        bus.subscribe('strong.def.update', () => {
+          this.defUpdate();
         });
         bus.subscribe('strong.hide', () => {
           this.hide();
@@ -13147,9 +13181,6 @@
         });
         bus.subscribe('strong.task.update', (strongTask) => {
           this.taskUpdate(strongTask);
-        });
-        bus.subscribe('strong.word.update', (strongWord) => {
-          this.wordUpdate(strongWord);
         });
       }
 
@@ -13175,10 +13206,6 @@
       wordSelect(strongWord) {
         bus.publish('strong.word.change', strongWord);
         bus.publish('strong.task.change', 'strong-result');
-      }
-
-      wordUpdate(strongWord) {
-        this.strongWord = strongWord;
       }
 
     }
@@ -14176,10 +14203,6 @@
         this.subscribe();
       }
 
-      panesUpdate(panes) {
-        this.panes = panes;
-      }
-
       read() {
         bus.publish('help.task.change', 'help-read');
       }
@@ -14215,10 +14238,6 @@
         });
         bus.subscribe('help.task.update', (helpTask) => {
           this.taskUpdate(helpTask);
-        });
-
-        bus.subscribe('panes.update', (panes) => {
-          this.panesUpdate(panes);
         });
 
         bus.subscribe('sidebar.update', (sidebar) => {

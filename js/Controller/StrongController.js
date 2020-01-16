@@ -13,6 +13,16 @@ class StrongController {
     bus.publish('sidebar.change', 'none');
   }
 
+  chapterIdxUpdate() {
+    if (this.selectVerseIdx) {
+      if (this.panes === 1) {
+        bus.publish('sidebar.select', 'none');
+      }
+      bus.publish('read.scroll-to-verse', this.selectVerseIdx);
+      this.selectVerseIdx = null;
+    }
+  }
+
   def() {
     bus.publish('strong.task.change', 'strong-def');
   }
@@ -21,8 +31,7 @@ class StrongController {
     bus.publish('strong.def.sub-change', strongDef);
   }
 
-  defUpdate(strongDefObj) {
-    this.strongDefObj = strongDefObj;
+  defUpdate() {
     bus.publish('strong.task.change', 'strong-def');
   }
 
@@ -93,12 +102,9 @@ class StrongController {
   }
 
   readSelect(verseIdx) {
+    this.selectVerseIdx = verseIdx;
     let chapterIdx = chapterIdxByVerseIdx(verseIdx);
     bus.publish('chapterIdx.change', chapterIdx);
-    if (this.panes === 1) {
-      bus.publish('sidebar.select', 'none');
-    }
-    bus.publish('read.scroll-to-verse', verseIdx);
   }
 
   show() {
@@ -119,6 +125,10 @@ class StrongController {
   }
 
   subscribe() {
+    bus.subscribe('chapterIdx.update', () => {
+      this.chapterIdxUpdate();
+    });
+
     bus.subscribe('panes.update', (panes) => {
       this.panesUpdate(panes);
     });
@@ -196,8 +206,8 @@ class StrongController {
     bus.subscribe('strong.back', () => {
       this.back();
     });
-    bus.subscribe('strong.def.update', (strongDefObj) => {
-      this.defUpdate(strongDefObj);
+    bus.subscribe('strong.def.update', () => {
+      this.defUpdate();
     });
     bus.subscribe('strong.hide', () => {
       this.hide();
@@ -210,9 +220,6 @@ class StrongController {
     });
     bus.subscribe('strong.task.update', (strongTask) => {
       this.taskUpdate(strongTask);
-    });
-    bus.subscribe('strong.word.update', (strongWord) => {
-      this.wordUpdate(strongWord);
     });
   }
 
@@ -238,10 +245,6 @@ class StrongController {
   wordSelect(strongWord) {
     bus.publish('strong.word.change', strongWord);
     bus.publish('strong.task.change', 'strong-result');
-  }
-
-  wordUpdate(strongWord) {
-    this.strongWord = strongWord;
   }
 
 }

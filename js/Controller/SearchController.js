@@ -13,6 +13,16 @@ class SearchController {
     bus.publish('sidebar.change', 'none');
   }
 
+  chapterIdxUpdate() {
+    if (this.selectVerseIdx) {
+      if (this.panes === 1) {
+        bus.publish('sidebar.select', 'none');
+      }
+      bus.publish('read.scroll-to-verse', this.selectVerseIdx);
+      this.selectVerseIdx = null;
+    }
+  }
+
   filter() {
     bus.publish('search.task.change', 'search-filter');
   }
@@ -82,12 +92,9 @@ class SearchController {
   }
 
   readSelect(verseIdx) {
+    this.selectVerseIdx = verseIdx;
     let chapterIdx = chapterIdxByVerseIdx(verseIdx);
     bus.publish('chapterIdx.change', chapterIdx);
-    if (this.panes === 1) {
-      bus.publish('sidebar.select', 'none');
-    }
-    bus.publish('read.scroll-to-verse', verseIdx);
   }
 
   result() {
@@ -109,6 +116,10 @@ class SearchController {
   }
 
   subscribe() {
+    bus.subscribe('chapterIdx.update', () => {
+      this.chapterIdxUpdate();
+    });
+
     bus.subscribe('panes.update', (panes) => {
       this.panesUpdate(panes);
     });

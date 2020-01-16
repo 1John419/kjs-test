@@ -364,6 +364,17 @@ button::-moz-focus-inner {
   margin: 0;
 }
 
+.font-size-label {
+  border: solid 1px var(--ui-fill);
+  border-radius: var(--border-radius);
+  color: var(--ui-fill);
+  height: calc(var(--target-size) - 6px);
+  line-height: calc(var(--target-size) - 6px);
+  padding: 0;
+  text-align: center;
+  width: calc(var(--target-size) - 6px);
+}
+
 .icon-description {
   flex: 1 1 auto;
   align-self: center;
@@ -378,7 +389,7 @@ button::-moz-focus-inner {
   margin: 0;
   outline: none;
   overflow: hidden;
-  padding: 0;
+  padding: 3px;
   width: var(--target-size);
 }
 

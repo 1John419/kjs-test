@@ -344,6 +344,10 @@ class ReadView {
       this.bookmarkShow();
     });
 
+    bus.subscribe('chapterIdx.update', (chapterIdx) => {
+      this.chapterIdxUpdate(chapterIdx);
+    });
+
     bus.subscribe('column.update', (column) => {
       this.columnUpdate(column);
     });
@@ -381,9 +385,6 @@ class ReadView {
       this.panesUpdate(panes);
     });
 
-    bus.subscribe('chapterIdx.update', (chapterIdx) => {
-      this.chapterIdxUpdate(chapterIdx);
-    });
     bus.subscribe('read.hide', () => {
       this.hide();
     });
