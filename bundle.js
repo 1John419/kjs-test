@@ -11478,8 +11478,9 @@
         let xlit = templateElement('div', 'strong-def', 'xlit', '',
           this.def[defTranliteration].normalize('NFC'));
         let pron = templateElement('div', 'strong-def', 'pron', '',
-          this.def[defPronunciation]);
-        let definition = this.buildDefinition(this.def[defDefinition]);
+          this.def[defPronunciation].normalize('NFC'));
+        let definition = this.buildDefinition(this.def[defDefinition]
+          .normalize('NFC'));
         fragment.appendChild(lemma);
         fragment.appendChild(xlit);
         fragment.appendChild(pron);
@@ -13268,16 +13269,16 @@
           fontClass: 'font--lato'
         });
         this.fonts.push({
-          fontName: 'Slabo',
-          fontClass: 'font--slabo'
+          fontName: 'Roboto Slab',
+          fontClass: 'font--roboto-slab'
         });
         this.fonts.push({
           fontName: 'Merriweather',
           fontClass: 'font--merriweather'
         });
         this.fonts.push({
-          fontName: 'Roboto Slab',
-          fontClass: 'font--roboto-slab'
+          fontName: 'Playfair Display',
+          fontClass: 'font--playfair-display'
         });
         bus.publish('fonts.update', this.fonts);
       }
