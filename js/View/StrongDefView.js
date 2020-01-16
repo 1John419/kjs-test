@@ -63,8 +63,9 @@ class StrongDefView {
     let xlit = templateElement('div', 'strong-def', 'xlit', '',
       this.def[defTranliteration].normalize('NFC'));
     let pron = templateElement('div', 'strong-def', 'pron', '',
-      this.def[defPronunciation]);
-    let definition = this.buildDefinition(this.def[defDefinition]);
+      this.def[defPronunciation].normalize('NFC'));
+    let definition = this.buildDefinition(this.def[defDefinition]
+      .normalize('NFC'));
     fragment.appendChild(lemma);
     fragment.appendChild(xlit);
     fragment.appendChild(pron);

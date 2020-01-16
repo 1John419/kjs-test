@@ -1,10 +1,11 @@
 'use strict';
 
 let prod = true;
-let updateFound = false;
-let newInstall = false;
+
 let loadMsg = document.querySelector('.load-msg');
 let loadScroll = document.querySelector('.load-scroll');
+let newInstall = false;
+let updateFound = false;
 
 window.onload = () => {
   console.log(`window.onload:      ${Date.now()}`);

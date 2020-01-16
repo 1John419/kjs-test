@@ -61,16 +61,16 @@ class SettingModel {
       fontClass: 'font--lato'
     });
     this.fonts.push({
-      fontName: 'Slabo',
-      fontClass: 'font--slabo'
+      fontName: 'Roboto Slab',
+      fontClass: 'font--roboto-slab'
     });
     this.fonts.push({
       fontName: 'Merriweather',
       fontClass: 'font--merriweather'
     });
     this.fonts.push({
-      fontName: 'Roboto Slab',
-      fontClass: 'font--roboto-slab'
+      fontName: 'Playfair Display',
+      fontClass: 'font--playfair-display'
     });
     bus.publish('fonts.update', this.fonts);
   }

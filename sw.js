@@ -2,7 +2,7 @@ let appPrefix = 'kjs-test';
 
 let appCaches = [
   {
-    name: 'kjs-test-core-20200115.01',
+    name: 'kjs-test-core-20200116.01',
     urls: [
       './',
       './bundle.js',
@@ -16,25 +16,25 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-css-20200115.01',
+    name: 'kjs-test-css-20200116.01',
     urls: [
       './css/kjs.css',
       './css/font.css'
     ]
   },
   {
-    name: 'kjs-test-font-20200115.01',
+    name: 'kjs-test-font-20200116.01',
     urls: [
-      './font/lato-v15-latin-regular.woff2',
-      './font/merriweather-v20-latin-regular.woff2',
-      './font/open-sans-v16-latin-regular.woff2',
-      './font/roboto-slab-v8-latin-regular.woff2',
-      './font/roboto-v19-latin-regular.woff2',
-      './font/slabo-27px-v5-latin-regular.woff2'
+      './font/lato-v16-latin-regular.woff2',
+      './font/merriweather-v21-latin-regular.woff2',
+      './font/open-sans-v17-latin-regular.woff2',
+      './font/playfair-display-v18-latin-regular.woff2',
+      './font/roboto-slab-v10-latin-regular.woff2',
+      './font/roboto-v20-latin-regular.woff2'
     ]
   },
   {
-    name: 'kjs-test-help-20200115.01',
+    name: 'kjs-test-help-20200116.01',
     urls: [
       './help/about.html',
       './help/bookmark.html',
@@ -49,14 +49,14 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjs-test-lzma-20200115.01',
+    name: 'kjs-test-lzma-20200116.01',
     urls: [
       './lzma/strong.json.lzma',
       './lzma/tome.kjv.json.lzma'
     ]
   },
   {
-    name: 'kjs-test-png-20200115.01',
+    name: 'kjs-test-png-20200116.01',
     urls: [
       './favicon.png',
       './png/icon-032.png',
