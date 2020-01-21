@@ -7,7 +7,7 @@ Dedicated to our precious Lord and Saviour Jesus Christ.
 
 "Heaven and earth shall pass away, but my words shall not pass away."
 
-The application supports any Android, Linux, or Windows platform with the latest version of Google Chrome.
+The application supports Android, Linux, or Windows platforms with the latest version of Google Chrome.
 
 ### Download Link
 [kjs-test](https://1john419.github.io/kjs-test/)
