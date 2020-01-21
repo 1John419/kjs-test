@@ -2,7 +2,7 @@ let appPrefix = 'kjs-test';
 
 let appCaches = [
   {
-    name: 'kjs-test-core-20200121.01',
+    name: 'kjs-test-core-20200121.05',
     urls: [
       './',
       './bundle.js',
