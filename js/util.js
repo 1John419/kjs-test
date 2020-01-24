@@ -45,3 +45,8 @@ export const removeAllChildren = (element) => {
     element.removeChild(element.lastChild);
   }
 };
+
+export const sideScrollElement = (scrollElement, element) => {
+  let x = element.offsetLeft - 8;
+  scrollElement.scrollLeft = x;
+};
