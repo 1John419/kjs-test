@@ -12005,6 +12005,10 @@
         this.defChangePending = true;
       }
 
+      defSubChange() {
+        this.defChangePending = true;
+      }
+
       defUpdate(strongDefObj) {
         this.strongDefObj = strongDefObj;
         this.strongDef = this.strongDefObj.k;
@@ -12093,6 +12097,9 @@
 
         queue.subscribe('strong.def.change', () => {
           this.defChange();
+        });
+        queue.subscribe('strong.def.sub-change', () => {
+          this.defSubChange();
         });
         queue.subscribe('strong.def.update', (strongDefObj) => {
           this.defUpdate(strongDefObj);
