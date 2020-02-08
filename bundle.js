@@ -5470,7 +5470,7 @@
       }
 
       publish(command, data) {
-        console.log(command);
+        // console.log(command);
         if (this.commands[command] && this.commands[command].length >= 1) {
           for (let listener of this.commands[command]) {
             this.queue.push({listener, data});
@@ -7856,10 +7856,10 @@
       updateActiveFolder(activeFolder) {
         this.activeFolder = activeFolder;
         this.updateBanner();
-        this.updateList();
+        this.updateBookmarks();
       }
 
-      updateList() {
+      updateBookmarks() {
         this.scrollToTop();
         removeAllChildren(this.list);
         if (this.activeFolder.bookmarks.length === 0) {
@@ -8016,7 +8016,7 @@
 
       listUpdate(moveCopyList) {
         this.moveCopyList = moveCopyList;
-        this.updateList();
+        this.updateFolders();
       }
 
       menuClick(target) {
@@ -8089,7 +8089,7 @@
         this.banner.innerHTML = `${ref} <br> Move/Copy to Folder:`;
       }
 
-      updateList() {
+      updateFolders() {
         this.scrollToTop();
         removeAllChildren(this.list);
         if (this.moveCopyList.length === 0) {
@@ -8212,7 +8212,7 @@
 
       folderListUpdate(folderList) {
         this.folderList = folderList;
-        this.updateList();
+        this.updateFolders();
       }
 
       getElements() {
@@ -8327,7 +8327,7 @@
         queue.publish('bookmark-folder.up', folderName);
       }
 
-      updateList() {
+      updateFolders() {
         this.scrollToTop();
         removeAllChildren(this.list);
         let fragment = document.createDocumentFragment();
@@ -10061,7 +10061,7 @@
           if (this.rig.state === 'OK') {
             this.applyFilter();
             this.updateBanner();
-            this.updateList();
+            this.updateResult();
           }
         }
       }
@@ -10250,7 +10250,7 @@
           `${this.rig.query}`;
       }
 
-      updateList() {
+      updateResult() {
         this.scrollToTop();
         removeAllChildren(this.list);
         if (this.rig.state === 'OK') {
@@ -10447,7 +10447,7 @@
       rigUpdate(rig) {
         this.rig = rig;
         this.updateBanner();
-        this.updateList();
+        this.updateFilters();
       }
 
       scrollToTop() {
@@ -10517,7 +10517,7 @@
         this.banner.innerHTML = `${this.rig.query}`;
       }
 
-      updateList() {
+      updateFilters() {
         this.scrollToTop();
         removeAllChildren(this.list);
         if (this.rig.state === 'OK') {
@@ -10667,7 +10667,7 @@
 
       historyUpdate(history) {
         this.history = history;
-        this.updateList();
+        this.updateHistory();
       }
 
       initialize() {
@@ -10733,7 +10733,7 @@
         queue.publish('search-history.up', query);
       }
 
-      updateList() {
+      updateHistory() {
         this.scrollToTop();
         removeAllChildren(this.list);
         if (this.history.length === 0) {
@@ -11178,11 +11178,7 @@
           this.strongDef = strongDef;
           this.saveDef();
           this.addHistory();
-          this.strongIdx = this.strongHistory.indexOf(this.strongDef);
-          this.strongDefObj = await strongDb.defs.get(this.strongDef);
-          await this.updateWordObj();
-          await this.wordFirst();
-          queue.publish('strong.def.update', this.strongDefObj);
+          await this.defUpdate();
         }
       }
 
@@ -11190,6 +11186,10 @@
         this.strongDef = strongDef;
         this.saveDef();
         this.addSubHistory();
+        await this.defUpdate();
+      }
+
+      async defUpdate() {
         this.strongIdx = this.strongHistory.indexOf(this.strongDef);
         this.strongDefObj = await strongDb.defs.get(this.strongDef);
         await this.updateWordObj();
@@ -11583,26 +11583,23 @@
         if (this.words.length) {
           let word = this.words.find(x => x[wordKjvWord] === this.strongWord);
           this.wordTomeBin = word[wordTomeBin];
-          await this.updateWordVerses();
-          await this.updateWordMaps();
-          this.filterReset();
-          queue.publish('strong.word.update', this.strongWord);
         } else {
           this.wordTomeBin = [];
-          await this.updateWordVerses();
-          await this.updateWordMaps();
-          this.filterReset();
-          queue.publish('strong.word.update', this.strongWord);
         }
+        await this.updateWordVerses();
+        await this.updateWordMaps();
+        this.filterReset();
+        queue.publish('strong.word.update', this.strongWord);
       }
 
       async wordFirst() {
+        let firstKjvWord;
         if (this.words.length) {
-          let firstKjvWord = this.words[firstWord][wordKjvWord];
-          await this.wordChange(firstKjvWord);
+          firstKjvWord = this.words[firstWord][wordKjvWord];
         } else {
-          await this.wordChange(null);
+          firstKjvWord = null;
         }
+        await this.wordChange(firstKjvWord);
       }
 
     }
@@ -11722,7 +11719,7 @@
         this.strongDef = this.strongDefObj.k;
         this.def = this.strongDefObj.v;
         this.updateBanner();
-        this.updateList();
+        this.updateDefs();
         this.updateActiveWord();
       }
 
@@ -11855,7 +11852,7 @@
         }
       }
 
-      updateList() {
+      updateDefs() {
         this.scrollToTop();
         removeAllChildren(this.list);
         let def = this.buildDef();
@@ -11975,6 +11972,10 @@
         this.page.appendChild(this.toolbarUpper);
 
         this.scroll = templateScroll('strong-filter');
+
+        this.empty = templateElement('div', 'empty', 'strong-filter', null,
+          'No Strong Filter.');
+        this.scroll.appendChild(this.empty);
         this.list = templateElement('div', 'list', 'strong-filter', null, null);
         this.scroll.appendChild(this.list);
         this.page.appendChild(this.scroll);
@@ -12005,9 +12006,12 @@
       }
 
       defUpdate(strongDefObj) {
-        this.defChangePending = false;
         this.strongDefObj = strongDefObj;
         this.strongDef = this.strongDefObj.k;
+        if (this.defChangePending) {
+          this.defChangePending = false;
+          this.updatePane();
+        }
       }
 
       filterClick(btnFilter) {
@@ -12022,9 +12026,7 @@
 
       filterUpdate(strongFilter) {
         this.strongFilter = strongFilter;
-        if (!this.defChangePending && !this.wordChangePending) {
-          this.updateActiveFilter();
-        }
+        this.updateActiveFilter();
       }
 
       foldClick(btnFold) {
@@ -12133,29 +12135,46 @@
       }
 
       updateActiveFilter() {
-        if (this.btnActiveFilter) {
-          this.btnActiveFilter.classList.remove('btn-filter--active');
-        }
-        let bookIdx = this.strongFilter.bookIdx;
-        let chapterIdx = this.strongFilter.chapterIdx;
-        let query = `.btn-filter[data-book-idx="${bookIdx}"]` +
-          `[data-chapter-idx="${chapterIdx}"]`;
-        let btn = this.list.querySelector(query);
-        if (btn) {
-          this.btnActiveFilter = btn;
-          btn.classList.add('btn-filter--active');
+        if (this.strongWordTomeBin.length) {
+          if (this.btnActiveFilter) {
+            this.btnActiveFilter.classList.remove('btn-filter--active');
+          }
+          let bookIdx = this.strongFilter.bookIdx;
+          let chapterIdx = this.strongFilter.chapterIdx;
+          let query = `.btn-filter[data-book-idx="${bookIdx}"]` +
+            `[data-chapter-idx="${chapterIdx}"]`;
+          let btn = this.list.querySelector(query);
+          if (btn) {
+            this.btnActiveFilter = btn;
+            btn.classList.add('btn-filter--active');
+          }
         }
       }
 
       updateBanner() {
-        this.banner.innerHTML = `${this.strongDef} ${this.strongWord}`;
+        if (this.strongWord) {
+          this.banner.innerHTML = `${this.strongDef} ${this.strongWord}`;
+        } else {
+          this.banner.innerHTML = `${this.strongDef}`;
+        }
       }
 
-      updateList() {
+      updateFilters() {
         this.scrollToTop();
         removeAllChildren(this.list);
-        let list = this.buildFilters();
-        this.list.appendChild(list);
+        if (this.strongWordTomeBin.length) {
+          this.empty.classList.add('empty--hide');
+          let list = this.buildFilters();
+          this.list.appendChild(list);
+        } else {
+          this.empty.classList.remove('empty--hide');
+        }
+      }
+
+      updatePane() {
+        this.updateBanner();
+        this.updateFilters();
+        this.updateActiveFilter();
       }
 
       wordChange() {
@@ -12168,12 +12187,10 @@
 
       wordUpdate(strongWord) {
         this.strongWord = strongWord;
-        if (this.strongWord) {
-          this.updateBanner();
-          this.updateList();
-          this.updateActiveFilter();
+        if (this.wordChangePending && this.strongWord) {
+          this.wordChangePending = false;
+          this.updatePane();
         }
-        this.wordChangePending = false;
       }
 
     }
@@ -12260,7 +12277,7 @@
 
         this.scroll = templateScroll('strong-history');
         this.empty = templateElement('div', 'empty', 'strong-history', null,
-          'No Strong saved.');
+          'No Strong History.');
         this.scroll.appendChild(this.empty);
 
         this.list = templateElement('div', 'list', 'strong-history', null, null);
@@ -12318,7 +12335,7 @@
 
       historyUpdate(strongHstory) {
         this.history = strongHstory;
-        this.updateList();
+        this.updateHistory();
       }
 
       initialize() {
@@ -12388,7 +12405,7 @@
         queue.publish('strong-history.up', strongDef);
       }
 
-      updateList() {
+      updateHistory() {
         this.scrollToTop();
         removeAllChildren(this.list);
         if (this.history.length === 0) {
@@ -12653,6 +12670,10 @@
 
         this.scroll = templateScroll('strong-result');
 
+        this.empty = templateElement('div', 'empty', 'strong-result', null,
+          'No Strong Result.');
+        this.scroll.appendChild(this.empty);
+
         this.list = templateElement('div', 'list', 'strong-result', null, null);
         this.scroll.appendChild(this.list);
 
@@ -12716,7 +12737,7 @@
         this.strongDefObj = strongDefObj;
         this.strongDef = this.strongDefObj.k;
         this.updateBanner();
-        this.updateList();
+        this.updateResult();
       }
 
       filterChange() {
@@ -12728,8 +12749,7 @@
         this.applyFilter();
         if (this.filterChangePending) {
           this.filterChangePending = false;
-          this.updateBanner();
-          this.updateList();
+          this.updatePane();
         }
       }
 
@@ -12932,9 +12952,19 @@
         }
       }
 
-      updateList() {
+      updatePane() {
+        this.updateBanner();
+        this.updateResult();
+      }
+
+      updateResult() {
         this.scrollToTop();
         removeAllChildren(this.list);
+        if (this.verseCount) {
+          this.empty.classList.add('empty--hide');
+        } else {
+          this.empty.classList.remove('empty--hide');
+        }
         this.loadIdx = 0;
         this.loadedVerses = 0;
         this.loadVerses();
@@ -12960,8 +12990,7 @@
         this.strongWord = strongWord;
         if (this.wordChangePending) {
           this.wordChangePending = false;
-          this.updateBanner();
-          this.updateList();
+          this.updatePane();
         }
       }
 
@@ -13124,7 +13153,7 @@
         this.banner.textContent = this.verse[verseCitation];
       }
 
-      updateList() {
+      updateVerse() {
         this.scrollToTop();
         removeAllChildren(this.list);
         let docFragment = document.createDocumentFragment();
@@ -13141,7 +13170,7 @@
         this.strongVerse = this.strongVerseObj.k;
         this.verse = this.strongVerseObj.v;
         this.updateBanner();
-        this.updateList();
+        this.updateVerse();
       }
 
     }
