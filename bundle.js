@@ -3,8 +3,6 @@
 
   let loadMsg = document.querySelector('.load-msg');
   let loadScroll = document.querySelector('.load-scroll');
-  let newInstall = false;
-  let updateFound = false;
 
   window.onload = () => {
     console.log(`window.onload:      ${Date.now()}`);
@@ -12,55 +10,13 @@
     progress('* Download app *');
 
     {
-      swEvents();
+      loadApp();
     }
-  };
-
-  let swEvents = () => {
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker.ready.then(() => {
-        console.log(`sw.ready:           ${Date.now()}`);
-        if (!updateFound) {
-          loadApp();
-        } else {
-          newInstall = true;
-          console.log(`new install:        ${Date.now()}`);
-        }
-      }).catch((error) => {
-        console.log(`sw.ready error: ${error.message}`);
-      });
-    }
-
-    navigator.serviceWorker.register('./sw.js').then((reg) => {
-      console.log(`sw registered:      ${Date.now()}`);
-      reg.onupdatefound = () => {
-        updateFound = true;
-        console.log(`reg.updatefound:    ${Date.now()}`);
-        const newWorker = reg.installing;
-        newWorker.onstatechange = (event) => {
-          if (event.target.state === 'activated') {
-            console.log(`nw.activated:       ${Date.now()}`);
-            if (newInstall) {
-              loadApp();
-            } else {
-              refresh();
-            }
-          }
-        };
-      };
-    }).catch((error) => {
-      console.log(`reg.error: ${error.message}`);
-    });
   };
 
   const progress = (msg) => {
     loadMsg.innerHTML += msg + '<br>';
     loadScroll.scrollTop = loadScroll.scrollHeight;
-  };
-
-  const refresh = () => {
-    console.log(`refresh():          ${Date.now()}`);
-    // window.location.reload(true);
   };
 
   const loadApp = async () => {
@@ -75,7 +31,8 @@
 
     let script = document.createElement('script');
     {
-      script.src = './bundle.js';
+      script.type = 'module';
+      script.src = './js/app.js';
     }
     document.body.appendChild(script);
   };
@@ -9169,7 +9126,7 @@
         if (acrostic) {
           acrosticSpan = document.createElement('span');
           acrosticSpan.classList.add('verse-acrostic');
-          acrosticSpan.textContent = acrostic;
+          acrosticSpan.textContent = acrostic + ' ';
         }
       }
       return acrosticSpan;
@@ -9204,7 +9161,7 @@
     buildRefSpan(verseObj) {
       let refSpan = document.createElement('span');
       refSpan.classList.add('verse-ref');
-      refSpan.textContent = verseObj.v[verseCitation];
+      refSpan.textContent = verseObj.v[verseCitation] + ' ';
       return refSpan;
     }
 
@@ -11813,7 +11770,7 @@
         if (acrostic) {
           acrosticSpan = document.createElement('span');
           acrosticSpan.classList.add('verse-acrostic');
-          acrosticSpan.textContent = acrostic;
+          acrosticSpan.textContent = acrostic + ' ';
         }
       }
       return acrosticSpan;
@@ -11853,7 +11810,7 @@
     buildRefSpan(verseObj) {
       let refSpan = document.createElement('span');
       refSpan.classList.add('verse-ref');
-      refSpan.textContent = verseObj.v[verseCitation];
+      refSpan.textContent = verseObj.v[verseCitation] + ' ';
       return refSpan;
     }
 
@@ -11869,7 +11826,7 @@
         let phrase = kjvWords.slice(map[mapSliceStart], map[mapSliceEnd]).join(' ');
         parts.push(phrase);
         if (cleanNums.includes(this.strongDef)) {
-          parts.push(`<span class="super">${strongStr}</span>`);
+          parts.push(`<span class="super"> ${strongStr}</span>`);
         }
       }
       let innerHtml = parts.join(' ').replace(/ <span/g, '<span');
