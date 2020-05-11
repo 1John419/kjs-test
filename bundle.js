@@ -3,6 +3,8 @@
 
   let loadMsg = document.querySelector('.load-msg');
   let loadScroll = document.querySelector('.load-scroll');
+  let newInstall = false;
+  let updateFound = false;
 
   window.onload = () => {
     console.log(`window.onload:      ${Date.now()}`);
@@ -10,13 +12,55 @@
     progress('* Download app *');
 
     {
-      loadApp();
+      swEvents();
     }
+  };
+
+  let swEvents = () => {
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.ready.then(() => {
+        console.log(`sw.ready:           ${Date.now()}`);
+        if (!updateFound) {
+          loadApp();
+        } else {
+          newInstall = true;
+          console.log(`new install:        ${Date.now()}`);
+        }
+      }).catch((error) => {
+        console.log(`sw.ready error: ${error.message}`);
+      });
+    }
+
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      console.log(`sw registered:      ${Date.now()}`);
+      reg.onupdatefound = () => {
+        updateFound = true;
+        console.log(`reg.updatefound:    ${Date.now()}`);
+        const newWorker = reg.installing;
+        newWorker.onstatechange = (event) => {
+          if (event.target.state === 'activated') {
+            console.log(`nw.activated:       ${Date.now()}`);
+            if (newInstall) {
+              loadApp();
+            } else {
+              refresh();
+            }
+          }
+        };
+      };
+    }).catch((error) => {
+      console.log(`reg.error: ${error.message}`);
+    });
   };
 
   const progress = (msg) => {
     loadMsg.innerHTML += msg + '<br>';
     loadScroll.scrollTop = loadScroll.scrollHeight;
+  };
+
+  const refresh = () => {
+    console.log(`refresh():          ${Date.now()}`);
+    // window.location.reload(true);
   };
 
   const loadApp = async () => {
@@ -31,8 +75,7 @@
 
     let script = document.createElement('script');
     {
-      script.type = 'module';
-      script.src = './js/app.js';
+      script.src = './bundle.js';
     }
     document.body.appendChild(script);
   };
@@ -12884,7 +12927,7 @@
 
       this.fontSample = templateElement('div', 'font-sample', null, null, null);
       this.fontSample.innerHTML = '<p class="font-sample-verse">' +
-        '<span class="verse-ref">1 John 4:19</span>' +
+        '<span class="verse-ref">1 John 4:19 </span>' +
         'We love him, because he first loved us.</p>';
       this.scroll.appendChild(this.fontSample);
 
