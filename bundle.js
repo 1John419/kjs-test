@@ -6157,7 +6157,7 @@
     }
 
     chapterIdxUpdate() {
-      queue.publish('read.scroll-to-top');
+      queue.publish('read.scroll-to-top', null);
       if (this.sidebar === 'navigator') {
         if (this.panes === 1) {
           queue.publish('sidebar.change', 'none');
@@ -8778,8 +8778,6 @@
 
   const DEFAULT_QUERY = 'day of the lord';
 
-  const firstEntry$1 = 0;
-
   class SearchModel {
 
     constructor() {
@@ -8826,26 +8824,10 @@
       this.updateHistory();
     }
 
-    historyDown(str) {
-      let index = this.searchHistory.indexOf(str);
-      if (index !== (this.searchHistory.length - 1) && index !== -1) {
-        this.reorderHistory(index, index + 1);
-        this.updateHistory();
-      }
-    }
-
     historyIsValid(searchHistory) {
       return searchHistory.some((x) => {
         return typeof x === 'string';
       });
-    }
-
-    historyUp(str) {
-      let index = this.searchHistory.indexOf(str);
-      if (index !== 0 && index !== -1) {
-        this.reorderHistory(index, index - 1);
-        this.updateHistory();
-      }
     }
 
     initialize() {
@@ -8885,11 +8867,6 @@
         this.resetFilter();
         queue.publish('search.query.update', this.searchQuery);
       }
-    }
-
-    reorderHistory(fromIdx, toIdx) {
-      this.searchHistory.splice(toIdx, 0,
-        this.searchHistory.splice(fromIdx, 1)[firstEntry$1]);
     }
 
     resetFilter() {
@@ -9032,12 +9009,6 @@
       });
       queue.subscribe('search.history.delete', (query) => {
         this.historyDelete(query);
-      });
-      queue.subscribe('search.history.down', (query) => {
-        this.historyDown(query);
-      });
-      queue.subscribe('search.history.up', (query) => {
-        this.historyUp(query);
       });
 
       queue.subscribe('search.query.change', async (query) => {
@@ -9695,15 +9666,9 @@
 
   }
 
-  const actionSet$3 = [
-    { icon: 'up', label: 'Up' },
-    { icon: 'down', label: 'Down' },
-    { icon: 'delete', label: 'Delete' },
-    { icon: 'cancel', label: 'Cancel' }
-  ];
-
   const lowerToolSet$d = [
-    { type: 'btn', icon: 'result', label: 'Search Result' }
+    { type: 'btn', icon: 'result', label: 'Search Result' },
+    { type: 'btn', icon: 'history-clear', label: 'Clear Hitory' }
   ];
 
   const upperToolSet$d = [
@@ -9716,55 +9681,25 @@
       this.initialize();
     }
 
-    actionMenuClick(event) {
-      event.preventDefault();
-      let btn = event.target.closest('button');
-      if (btn) {
-        if (btn === this.btnCancel) {
-          this.actionMenu.classList.add('action-menu--hide');
-        } else {
-          let entry = this.activeEntry.querySelector('.btn-entry--history');
-          let query = entry.textContent;
-          if (btn === this.btnDelete) {
-            this.delete(query);
-          } else if (btn === this.btnDown) {
-            this.down(query);
-          } else if (btn === this.btnUp) {
-            this.up(query);
-          }
-          this.actionMenu.classList.add('action-menu--hide');
-        }
-      }
-    }
-
     addListeners() {
-      this.actionMenu.addEventListener('click', (event) => {
-        this.actionMenuClick(event);
-      });
       this.list.addEventListener('click', (event) => {
         this.listClick(event);
-      });
-      this.clear.addEventListener('click', (event) => {
-        this.clearClick(event);
       });
       this.toolbarLower.addEventListener('click', (event) => {
         this.toolbarLowerClick(event);
       });
     }
 
-    btnMenuClick(target) {
-      this.showActionMenu(target);
-    }
-
-    buildEntry(query) {
+    buildEntry(query, idx) {
       let entry = document.createElement('div');
       entry.classList.add('entry', 'entry--history');
       let btnEntry = document.createElement('button');
       btnEntry.classList.add('btn-entry', 'btn-entry--history');
+      btnEntry.dataset.historyIdx = idx;
       btnEntry.textContent = query;
-      let btnMenu = templateBtnIcon('menu', 'Menu');
       entry.appendChild(btnEntry);
-      entry.appendChild(btnMenu);
+      let btnDelete = templateBtnIcon('delete', 'Delete');
+      entry.appendChild(btnDelete);
       return entry;
     }
 
@@ -9782,17 +9717,7 @@
       this.list = templateElement('div', 'list', 'search-history', null, null);
       this.scroll.appendChild(this.list);
 
-      this.actionMenu = templateActionMenu('search-history', actionSet$3);
-      this.scroll.appendChild(this.actionMenu);
       this.page.appendChild(this.scroll);
-
-      this.clear = templateElement('div', 'clear', 'search', null,
-        null);
-      this.btnClear = document.createElement('button');
-      this.btnClear.classList.add('btn-clear');
-      this.btnClear.textContent = 'Clear History';
-      this.clear.appendChild(this.btnClear);
-      this.scroll.appendChild(this.clear);
 
       this.toolbarLower = templateToolbarLower(lowerToolSet$d);
       this.page.appendChild(this.toolbarLower);
@@ -9801,16 +9726,8 @@
       container.appendChild(this.page);
     }
 
-    clearClick(event) {
-      event.preventDefault();
-      let target = event.target;
-      if (target === this.btnClear) {
-        queue.publish('search-history.clear', null);
-      }
-    }
-
-    delete(query) {
-      queue.publish('search-history.delete', query);
+    delete(historyIdx) {
+      queue.publish('search-history.delete', historyIdx);
     }
 
     down(query) {
@@ -9818,17 +9735,13 @@
     }
 
     getElements() {
-      this.btnUp = this.actionMenu.querySelector('.btn-icon--up');
-      this.btnDown = this.actionMenu.querySelector('.btn-icon--down');
-      this.btnDelete = this.actionMenu.querySelector('.btn-icon--delete');
-      this.btnCancel = this.actionMenu.querySelector('.btn-icon--cancel');
-
       this.btnResult = this.toolbarLower.querySelector(
         '.btn-icon--result');
+      this.btnHistoryClear = this.toolbarLower.querySelector(
+        '.btn-icon--history-clear');
     }
 
     hide() {
-      this.actionMenu.classList.add('action-menu--hide');
       this.page.classList.add('page--hide');
     }
 
@@ -9851,9 +9764,10 @@
         if (target.classList.contains('btn-entry--history')) {
           let query = target.textContent;
           queue.publish('search-history.select', query);
-        } else if (target.classList.contains('btn-icon--menu')) {
+        } else if (target.classList.contains('btn-icon--delete')) {
           let entry = target.previousSibling;
-          this.btnMenuClick(entry);
+          let query = entry.textContent;
+          queue.publish('search-history.delete', query);
         }
       }
     }
@@ -9864,13 +9778,6 @@
 
     show() {
       this.page.classList.remove('page--hide');
-    }
-
-    showActionMenu(target) {
-      this.activeEntry = target.closest('div');
-      let top = target.offsetTop;
-      this.actionMenu.style.top = `${top}px`;
-      this.actionMenu.classList.remove('action-menu--hide');
     }
 
     subscribe() {
@@ -9892,12 +9799,10 @@
       if (target) {
         if (target === this.btnResult) {
           queue.publish('search-result', null);
+        } else if (target === this.btnHistoryClear) {
+          queue.publish('search-history.clear', null);
         }
       }
-    }
-
-    up(query) {
-      queue.publish('search-history.up', query);
     }
 
     updateHistory() {
@@ -9905,10 +9810,8 @@
       removeAllChildren(this.list);
       if (this.history.length === 0) {
         this.empty.classList.remove('empty--hide');
-        this.clear.classList.add('clear--hide');
       } else {
         this.empty.classList.add('empty--hide');
-        this.clear.classList.remove('clear--hide');
         let fragment = document.createDocumentFragment();
         for (let query of this.history) {
           let entry = this.buildEntry(query);
@@ -10115,10 +10018,6 @@
       queue.publish('search.history.delete', query);
     }
 
-    historyDown(query) {
-      queue.publish('search.history.down', query);
-    }
-
     historyPane() {
       queue.publish('search.task.change', 'search-history');
     }
@@ -10126,10 +10025,6 @@
     historySelect(query) {
       this.historySelectPending = true;
       queue.publish('search.query.change', query);
-    }
-
-    historyUp(query) {
-      queue.publish('search.history.up', query);
     }
 
     historyUpdate() {
@@ -10228,14 +10123,8 @@
       queue.subscribe('search-history.delete', (query) => {
         this.historyDelete(query);
       });
-      queue.subscribe('search-history.down', (query) => {
-        this.historyDown(query);
-      });
       queue.subscribe('search-history.select', (query) => {
         this.historySelect(query);
-      });
-      queue.subscribe('search-history.up', (query) => {
-        this.historyUp(query);
       });
 
       queue.subscribe('search-lookup', () => {
@@ -10313,7 +10202,6 @@
   const strongResultReroute = ['strong-filter'];
   const validTasks$3 = ['strong-def', 'strong-verse', 'strong-result'];
 
-  const firstEntry$2 = 0;
   const firstWord = 0;
 
   const IDX_1_JOHN_4_19 = 30622;
@@ -10331,11 +10219,35 @@
       }
     }
 
-    addSubHistory() {
-      if (this.strongHistory.indexOf(this.strongDef) === -1) {
-        this.strongHistory.splice(this.strongIdx, 0, this.strongDef);
-        this.updateHistory();
+    chainAdd() {
+      this.strongChain.push(this.strongDef);
+      this.updateChain();
+    }
+
+    chainChange(strongChain) {
+      this.strongChain = strongChain;
+      this.updateChain();
+      queue.publish('strong.chain.update', this.strongChain);
+    }
+
+    chainClear() {
+      this.strongChain = [];
+      this.updateChain();
+    }
+
+    chainIsValid(strongChain) {
+      return strongChain.some((x) => {
+        return typeof x === 'string';
+      });
+    }
+
+    chainPrev() {
+      if (this.strongChain.length == 0) {
+        return;
       }
+      let strongDef = this.strongChain.pop();
+      this.updateChain();
+      this.defChange(strongDef);
     }
 
     async defChange(strongDef) {
@@ -10347,13 +10259,6 @@
         this.addHistory();
         await this.defUpdate();
       }
-    }
-
-    async defSubChange(strongDef) {
-      this.strongDef = strongDef;
-      this.saveDef();
-      this.addSubHistory();
-      await this.defUpdate();
     }
 
     async defUpdate() {
@@ -10402,26 +10307,10 @@
       this.updateHistory();
     }
 
-    historyDown(strongDef) {
-      let index = this.strongHistory.indexOf(strongDef);
-      if (index !== (this.strongHistory.length - 1) && index !== -1) {
-        this.reorderHistory(index, index + 1);
-        this.updateHistory();
-      }
-    }
-
     historyIsValid(strongHistory) {
       return strongHistory.some((x) => {
         return typeof x === 'string';
       });
-    }
-
-    historyUp(strongDef) {
-      let index = this.strongHistory.indexOf(strongDef);
-      if (index !== 0 && index !== -1) {
-        this.reorderHistory(index, index - 1);
-        this.updateHistory();
-      }
     }
 
     initialize() {
@@ -10438,20 +10327,34 @@
       this.modeChange(!this.strongMode);
     }
 
-    reorderHistory(fromIdx, toIdx) {
-      this.strongHistory.splice(toIdx, 0,
-        this.strongHistory.splice(fromIdx, 1)[firstEntry$2]);
-    }
-
     async restore() {
       this.restoreTask();
       this.restoreHistory();
+      this.restoreChain();
       await this.restoreDef();
       this.strongIdx = this.strongHistory.findIndex(x => x === this.strongDef);
       await this.restoreWord();
       this.restoreFilter();
       await this.restoreVerseIdx();
       this.restoreMode();
+    }
+
+    restoreChain() {
+      let defaultChain = [];
+      let strongChain = localStorage.getItem(`${appPrefix}-strongChain`);
+      if (!strongChain) {
+        strongChain = defaultChain;
+      } else {
+        try {
+          strongChain = JSON.parse(strongChain);
+        } catch (error) {
+          strongChain = defaultChain;
+        }
+        if (!this.chainIsValid(strongChain)) {
+          strongChain = defaultChain;
+        }
+      }
+      this.chainChange(strongChain);
     }
 
     async restoreDef() {
@@ -10584,6 +10487,11 @@
       await this.wordChange(strongWord);
     }
 
+    saveChain() {
+      localStorage.setItem(`${appPrefix}-strongChain`,
+        JSON.stringify(this.strongChain));
+    }
+
     saveDef() {
       localStorage.setItem(`${appPrefix}-strongDef`,
         JSON.stringify(this.strongDef));
@@ -10619,28 +10527,19 @@
         JSON.stringify(this.strongWord));
     }
 
-    async strongNext() {
-      this.strongIdx -= 1;
-      if (this.strongIdx < 0) {
-        this.strongIdx = this.strongHistory.length - 1;
-      }
-      queue.publish('strong.def.change', this.strongHistory[this.strongIdx]);
-    }
-
-    async strongPrev() {
-      this.strongIdx += 1;
-      if (this.strongIdx >= this.strongHistory.length) {
-        this.strongIdx = 0;
-      }
-      queue.publish('strong.def.change', this.strongHistory[this.strongIdx]);
-    }
-
     subscribe() {
+      queue.subscribe('strong.chain.add', () => {
+        this.chainAdd();
+      });
+      queue.subscribe('strong.chain.prev', () => {
+        this.chainPrev();
+      });
+      queue.subscribe('strong.chain.clear', () => {
+        this.chainClear();
+      });
+
       queue.subscribe('strong.def.change', async (strongDef) => {
         await this.defChange(strongDef);
-      });
-      queue.subscribe('strong.def.sub-change', async (strongDef) => {
-        await this.defSubChange(strongDef);
       });
 
       queue.subscribe('strong.filter.change', (strongFilter) => {
@@ -10652,19 +10551,6 @@
       });
       queue.subscribe('strong.history.delete', (strongDef) => {
         this.historyDelete(strongDef);
-      });
-      queue.subscribe('strong.history.down', (strongDef) => {
-        this.historyDown(strongDef);
-      });
-      queue.subscribe('strong.history.up', (strongDef) => {
-        this.historyUp(strongDef);
-      });
-
-      queue.subscribe('strong.next', async () => {
-        await this.strongNext();
-      });
-      queue.subscribe('strong.prev', async () => {
-        await this.strongPrev();
       });
 
       queue.subscribe('strong.restore', async () => {
@@ -10695,6 +10581,11 @@
         bookIdx: -1,
         chapterIdx: -1
       };
+    }
+
+    updateChain() {
+      this.saveChain();
+      queue.publish('strong.chain.update', this.strongChain);
     }
 
     updateHistory() {
@@ -10776,14 +10667,19 @@
     { type: 'btn', icon: 'strong-lookup', label: 'Strong Lookup' },
     { type: 'btn', icon: 'history', label: 'Strong History' },
     { type: 'btn', icon: 'strong-verse', label: 'Strong Verse' },
-    { type: 'btn', icon: 'result', label: 'Strong Result' }
+    { type: 'btn', icon: 'result', label: 'Strong Result' },
+    { type: 'btn', icon: 'prev', label: 'Previous Strong' }
   ];
 
   const upperToolSet$f = [
-    { type: 'btn', icon: 'prev', label: 'Previous Strong' },
-    { type: 'banner', modifier: 'strong-def', text: 'Strong Definition' },
-    { type: 'btn', icon: 'next', label: 'Next Strong' },
+    { type: 'banner', modifier: 'strong-def', text: 'Strong Definition' }
   ];
+
+  // const upperToolSet = [
+  //   { type: 'btn', icon: 'prev', label: 'Previous Strong' },
+  //   { type: 'banner', modifier: 'strong-def', text: 'Strong Definition' },
+  //   { type: 'btn', icon: 'next', label: 'Next Strong' },
+  // ];
 
   class StrongDefView {
 
@@ -10798,9 +10694,9 @@
       this.toolbarLower.addEventListener('click', (event) => {
         this.toolbarLowerClick(event);
       });
-      this.toolbarUpper.addEventListener('click', (event) => {
-        this.toolbarUpperClick(event);
-      });
+      // this.toolbarUpper.addEventListener('click', (event) => {
+      //   this.toolbarUpperClick(event);
+      // });
     }
 
     buildDef() {
@@ -10876,6 +10772,15 @@
       return strongWords;
     }
 
+    chainUpdate(strongChain) {
+      this.strongChain = strongChain;
+      if (this.strongChain.length) {
+        this.btnPrev.classList.remove('btn-icon--hide');
+      } else {
+        this.btnPrev.classList.add('btn-icon--hide');
+      }
+    }
+
     defClick(btn) {
       let strongDef = btn.dataset.strongDef;
       queue.publish('strong-def.select', strongDef);
@@ -10891,9 +10796,9 @@
     }
 
     getElements() {
-      this.btnPrev = this.toolbarUpper.querySelector('.btn-icon--prev');
+      // this.btnPrev = this.toolbarUpper.querySelector('.btn-icon--prev');
       this.banner = this.toolbarUpper.querySelector('.banner--strong-def');
-      this.btnNext = this.toolbarUpper.querySelector('.btn-icon--next');
+      // this.btnNext = this.toolbarUpper.querySelector('.btn-icon--next');
 
       this.btnBack = this.toolbarLower.querySelector('.btn-icon--back');
       this.btnLookup = this.toolbarLower.querySelector(
@@ -10904,6 +10809,7 @@
         '.btn-icon--history');
       this.btnResult = this.toolbarLower.querySelector(
         '.btn-icon--result');
+      this.btnPrev = this.toolbarLower.querySelector('.btn-icon--prev');
     }
 
     hide() {
@@ -10957,6 +10863,9 @@
         this.show();
       });
 
+      queue.subscribe('strong.chain.update', (strongChain) => {
+        this.chainUpdate(strongChain);
+      });
       queue.subscribe('strong.def.update', (strongDefObj) => {
         this.defUpdate(strongDefObj);
       });
@@ -10982,21 +10891,23 @@
           queue.publish('strong-verse', null);
         } else if (target === this.btnResult) {
           queue.publish('strong-result', null);
+        } else if (target === this.btnPrev) {
+          queue.publish('strong.prev', null);
         }
       }
     }
 
-    toolbarUpperClick(event) {
-      event.preventDefault();
-      let target = event.target.closest('button');
-      if (target) {
-        if (target === this.btnPrev) {
-          queue.publish('strong-def.prev.strong', 1);
-        } else if (target === this.btnNext) {
-          queue.publish('strong-def.next.strong', 2);
-        }
-      }
-    }
+    // toolbarUpperClick(event) {
+    //   event.preventDefault();
+    //   let target = event.target.closest('button');
+    //   if (target) {
+    //     if (target === this.btnPrev) {
+    //       queue.publish('strong-def.prev.strong', 1);
+    //     } else if (target === this.btnNext) {
+    //       queue.publish('strong-def.next.strong', 2);
+    //     }
+    //   }
+    // }
 
     updateActiveWord() {
       if (this.activeWordBtn) {
@@ -11352,15 +11263,9 @@
 
   }
 
-  const actionSet$4 = [
-    { icon: 'up', label: 'Up' },
-    { icon: 'down', label: 'Down' },
-    { icon: 'delete', label: 'Delete' },
-    { icon: 'cancel', label: 'Cancel' }
-  ];
-
   const lowerToolSet$h = [
-    { type: 'btn', icon: 'strong-def', label: 'Strong Definition' }
+    { type: 'btn', icon: 'strong-def', label: 'Strong Definition' },
+    { type: 'btn', icon: 'history-clear', label: 'Clear Hitory' }
   ];
 
   const upperToolSet$h = [
@@ -11375,36 +11280,9 @@
       this.initialize();
     }
 
-    actionMenuClick(event) {
-      event.preventDefault();
-      let btn = event.target.closest('button');
-      if (btn) {
-        if (btn === this.btnCancel) {
-          this.actionMenu.classList.add('action-menu--hide');
-        } else {
-          let entry = this.activeEntry.querySelector('.btn-entry--history');
-          let strongDef = entry.dataset.def;
-          if (btn === this.btnDelete) {
-            this.delete(strongDef);
-          } else if (btn === this.btnDown) {
-            this.down(strongDef);
-          } else if (btn === this.btnUp) {
-            this.up(strongDef);
-          }
-          this.actionMenu.classList.add('action-menu--hide');
-        }
-      }
-    }
-
     addListeners() {
-      this.actionMenu.addEventListener('click', (event) => {
-        this.actionMenuClick(event);
-      });
       this.list.addEventListener('click', (event) => {
         this.listClick(event);
-      });
-      this.clear.addEventListener('click', (event) => {
-        this.clearClick(event);
       });
       this.toolbarLower.addEventListener('click', (event) => {
         this.toolbarLowerClick(event);
@@ -11420,9 +11298,9 @@
       let first = transliteration.replace(',', '').split(' ')[firstXlit];
       btnEntry.textContent = `${strongDef} ${first.normalize('NFC')}`;
       btnEntry.dataset.def = strongDef;
-      let btnMenu = templateBtnIcon('menu', 'Menu');
       entry.appendChild(btnEntry);
-      entry.appendChild(btnMenu);
+      let btnDelete = templateBtnIcon('delete', 'Delete');
+      entry.appendChild(btnDelete);
       return entry;
     }
 
@@ -11440,17 +11318,7 @@
       this.list = templateElement('div', 'list', 'strong-history', null, null);
       this.scroll.appendChild(this.list);
 
-      this.actionMenu = templateActionMenu('strong-history', actionSet$4);
-      this.scroll.appendChild(this.actionMenu);
       this.page.appendChild(this.scroll);
-
-      this.clear = templateElement('div', 'clear', 'strong', null,
-        null);
-      this.btnClear = document.createElement('button');
-      this.btnClear.classList.add('btn-clear');
-      this.btnClear.textContent = 'Clear History';
-      this.clear.appendChild(this.btnClear);
-      this.scroll.appendChild(this.clear);
 
       this.toolbarLower = templateToolbarLower(lowerToolSet$h);
       this.page.appendChild(this.toolbarLower);
@@ -11459,34 +11327,18 @@
       container.appendChild(this.page);
     }
 
-    clearClick(event) {
-      event.preventDefault();
-      let target = event.target;
-      if (target === this.btnClear) {
-        queue.publish('strong-history.clear', null);
-      }
-    }
-
     delete(strongDef) {
       queue.publish('strong-history.delete', strongDef);
     }
 
-    down(strongDef) {
-      queue.publish('strong-history.down', strongDef);
-    }
-
     getElements() {
-      this.btnUp = this.actionMenu.querySelector('.btn-icon--up');
-      this.btnDown = this.actionMenu.querySelector('.btn-icon--down');
-      this.btnDelete = this.actionMenu.querySelector('.btn-icon--delete');
-      this.btnCancel = this.actionMenu.querySelector('.btn-icon--cancel');
-
       this.btnDef = this.toolbarLower.querySelector(
         '.btn-icon--strong-def');
+      this.btnHistoryClear = this.toolbarLower.querySelector(
+        '.btn-icon--history-clear');
     }
 
     hide() {
-      this.actionMenu.classList.add('action-menu--hide');
       this.page.classList.add('page--hide');
     }
 
@@ -11509,15 +11361,12 @@
         if (target.classList.contains('btn-entry--history')) {
           let strongDef = target.dataset.def;
           queue.publish('strong-history.select', strongDef);
-        } else if (target.classList.contains('btn-icon--menu')) {
+        } else if (target.classList.contains('btn-icon--delete')) {
           let entry = target.previousSibling;
-          this.menuClick(entry);
+          let strongDef = entry.dataset.def;
+          queue.publish('strong-history.delete', strongDef);
         }
       }
-    }
-
-    menuClick(target) {
-      this.showActionMenu(target);
     }
 
     scrollToTop() {
@@ -11526,13 +11375,6 @@
 
     show() {
       this.page.classList.remove('page--hide');
-    }
-
-    showActionMenu(target) {
-      this.activeEntry = target.closest('div');
-      let top = target.offsetTop;
-      this.actionMenu.style.top = `${top}px`;
-      this.actionMenu.classList.remove('action-menu--hide');
     }
 
     subscribe() {
@@ -11554,12 +11396,10 @@
       if (target) {
         if (target === this.btnDef) {
           queue.publish('strong-def', null);
+        } else if (target === this.btnHistoryClear) {
+          queue.publish('strong-history.clear', null);
         }
       }
-    }
-
-    up(strongDef) {
-      queue.publish('strong-history.up', strongDef);
     }
 
     updateHistory() {
@@ -11567,10 +11407,8 @@
       removeAllChildren(this.list);
       if (this.history.length === 0) {
         this.empty.classList.remove('empty--hide');
-        this.clear.classList.add('clear--hide');
       } else {
         this.empty.classList.add('empty--hide');
-        this.clear.classList.remove('clear--hide');
         let fragment = document.createDocumentFragment();
         for (let strongDef of this.history) {
           let entry = this.buildEntry(strongDef);
@@ -12361,7 +12199,8 @@
     }
 
     defSelect(strongDef) {
-      queue.publish('strong.def.sub-change', strongDef);
+      queue.publish('strong.chain.add', null);
+      queue.publish('strong.def.change', strongDef);
     }
 
     defUpdate() {
@@ -12420,6 +12259,7 @@
     }
 
     lookupFind(strongNum) {
+      queue.publish('strong.chain.clear', null);
       queue.publish('strong.def.change', strongNum);
     }
 
@@ -12431,16 +12271,12 @@
       queue.publish('strong.strong-mode.toggle', null);
     }
 
-    nextStrong() {
-      queue.publish('strong.next', null);
-    }
-
     panesUpdate(panes) {
       this.panes = panes;
     }
 
-    prevStrong() {
-      queue.publish('strong.prev', null);
+    prev() {
+      queue.publish('strong.chain.prev', null);
     }
 
     readSelect(verseIdx) {
@@ -12481,12 +12317,6 @@
       queue.subscribe('strong-def', () => {
         this.defPane();
       });
-      queue.subscribe('strong-def.next.strong',
-        () => { this.nextStrong(); }
-      );
-      queue.subscribe('strong-def.prev.strong',
-        () => { this.prevStrong(); }
-      );
       queue.subscribe('strong-def.select', (strongDef) => {
         this.defSelect(strongDef);
       });
@@ -12559,6 +12389,9 @@
       queue.subscribe('strong.hide', () => {
         this.hide();
       });
+      queue.subscribe('strong.prev', () => {
+        this.prev();
+      });
       queue.subscribe('strong.show', () => {
         this.show();
       });
@@ -12600,6 +12433,7 @@
     }
 
     verseSelect(strongDef) {
+      queue.publish('strong.chain.clear', null);
       queue.publish('strong.def.change', strongDef);
     }
 
