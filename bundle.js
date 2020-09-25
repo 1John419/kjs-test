@@ -10675,12 +10675,6 @@
     { type: 'banner', modifier: 'strong-def', text: 'Strong Definition' }
   ];
 
-  // const upperToolSet = [
-  //   { type: 'btn', icon: 'prev', label: 'Previous Strong' },
-  //   { type: 'banner', modifier: 'strong-def', text: 'Strong Definition' },
-  //   { type: 'btn', icon: 'next', label: 'Next Strong' },
-  // ];
-
   class StrongDefView {
 
     constructor() {
@@ -10694,9 +10688,6 @@
       this.toolbarLower.addEventListener('click', (event) => {
         this.toolbarLowerClick(event);
       });
-      // this.toolbarUpper.addEventListener('click', (event) => {
-      //   this.toolbarUpperClick(event);
-      // });
     }
 
     buildDef() {
@@ -10796,9 +10787,7 @@
     }
 
     getElements() {
-      // this.btnPrev = this.toolbarUpper.querySelector('.btn-icon--prev');
       this.banner = this.toolbarUpper.querySelector('.banner--strong-def');
-      // this.btnNext = this.toolbarUpper.querySelector('.btn-icon--next');
 
       this.btnBack = this.toolbarLower.querySelector('.btn-icon--back');
       this.btnLookup = this.toolbarLower.querySelector(
@@ -10896,18 +10885,6 @@
         }
       }
     }
-
-    // toolbarUpperClick(event) {
-    //   event.preventDefault();
-    //   let target = event.target.closest('button');
-    //   if (target) {
-    //     if (target === this.btnPrev) {
-    //       queue.publish('strong-def.prev.strong', 1);
-    //     } else if (target === this.btnNext) {
-    //       queue.publish('strong-def.next.strong', 2);
-    //     }
-    //   }
-    // }
 
     updateActiveWord() {
       if (this.activeWordBtn) {
